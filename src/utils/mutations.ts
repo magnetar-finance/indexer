@@ -154,7 +154,7 @@ export function createLPPosition(
         position.creationTransaction = event.transaction.hash;
     }
 
-    position.position = position.position.plus(divideByBase(amount, 18));
+    position.position = divideByBase(amount, 18);
     position.save();
     return position;
 }

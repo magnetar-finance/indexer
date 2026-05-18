@@ -1,4 +1,3 @@
-import { deriveCLPosId } from '../../utils/misc';
 import { BD_ZERO, ZERO_ADDRESS } from '../../utils/constants';
 import { divideByBase } from '../../utils/math';
 import {
@@ -7,6 +6,7 @@ import {
     DecreaseLiquidity as DecreaseLiquidityEvent,
 } from '../../../generated/NonfungiblePositionManager/NonfungiblePositionManager';
 import { CLPosition, LiquidityPosition, User } from '../../../generated/schema';
+import { getItemFromStorage, nullifyItem } from '../../utils/storage';
 
 export function handleTransfer(event: TransferEvent): void {
     const sender = event.params.from;
@@ -24,25 +24,28 @@ export function handleTransfer(event: TransferEvent): void {
     }
 
     if (isMint) {
-        const clPositionId = deriveCLPosId(event.transaction.hash.toHex());
-        const clPosition = CLPosition.load(clPositionId) as CLPosition;
+        const transactionId = event.transaction.hash.toHex();
+        const poolId = getItemFromStorage(transactionId);
+
+        if (poolId === null) {
+            return; // Pool not found in storage, cannot proceed
+        }
         // LP position has been created already, so update
-        const lpId = event.address.toHex() + '-' + clPosition.pool;
+        const lpId = event.address.toHex() + '-' + poolId;
         const lp = LiquidityPosition.load(lpId) as LiquidityPosition;
         lp.account = user.id;
         lp.clPositionTokenId = tokenId;
         lp.save();
 
-        // Create new CLPosition entity
-        const newCLPositionId = deriveCLPosId(tokenId.toString());
-        const newCLPosition = new CLPosition(newCLPositionId);
-        newCLPosition.pool = clPosition.pool;
-        newCLPosition.save();
+        nullifyItem(transactionId);
+        // We want to associate the CL position with the tokenId, so we can easily query it in the demanding handlers.
+        const clPosition = new CLPosition(tokenId.toString());
+        clPosition.pool = poolId;
+        clPosition.save();
     }
 
     if (isTransfer) {
-        const clPositionId = deriveCLPosId(tokenId.toString());
-        const clPosition = CLPosition.load(clPositionId) as CLPosition;
+        const clPosition = CLPosition.load(tokenId.toString()) as CLPosition;
         const lpId = event.address.toHex() + '-' + clPosition.pool;
         const lp = LiquidityPosition.load(lpId) as LiquidityPosition;
         lp.account = user.id;
@@ -50,8 +53,7 @@ export function handleTransfer(event: TransferEvent): void {
     }
 
     if (isBurn) {
-        const clPositionId = deriveCLPosId(tokenId.toString());
-        const clPosition = CLPosition.load(clPositionId) as CLPosition;
+        const clPosition = CLPosition.load(tokenId.toString()) as CLPosition;
         const lpId = event.address.toHex() + '-' + clPosition.pool;
         const lp = LiquidityPosition.load(lpId) as LiquidityPosition;
         lp.account = null;
@@ -62,8 +64,7 @@ export function handleTransfer(event: TransferEvent): void {
 
 export function handleIncreaseLiquidity(event: IncreaseLiquidityEvent): void {
     const tokenId = event.params.tokenId;
-    const clPositionId = deriveCLPosId(tokenId.toString());
-    const clPosition = CLPosition.load(clPositionId) as CLPosition;
+    const clPosition = CLPosition.load(tokenId.toString()) as CLPosition;
     const lpId = event.address.toHex() + '-' + clPosition.pool;
     const lp = LiquidityPosition.load(lpId) as LiquidityPosition;
     const amount = divideByBase(event.params.liquidity);
@@ -74,8 +75,7 @@ export function handleIncreaseLiquidity(event: IncreaseLiquidityEvent): void {
 
 export function handleDecreaseLiquidity(event: DecreaseLiquidityEvent): void {
     const tokenId = event.params.tokenId;
-    const clPositionId = deriveCLPosId(tokenId.toString());
-    const clPosition = CLPosition.load(clPositionId) as CLPosition;
+    const clPosition = CLPosition.load(tokenId.toString()) as CLPosition;
     const lpId = event.address.toHex() + '-' + clPosition.pool;
     const lp = LiquidityPosition.load(lpId) as LiquidityPosition;
     const amount = divideByBase(event.params.liquidity);
