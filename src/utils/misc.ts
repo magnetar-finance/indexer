@@ -4,18 +4,6 @@ import { Bundle, Token } from '../../generated/schema';
 import { ORACLES, WETH, BD_ONE } from './constants';
 import { divideByBase, multiplyByBase } from './math';
 
-export function deriveCLPosId(id: string): string {
-    return 'CLPos - ' + id;
-}
-
-export function deriveMintId(transactionHash: string): string {
-    return 'Mint - ' + transactionHash;
-}
-
-export function deriveBurnId(transactionHash: string): string {
-    return 'Burn - ' + transactionHash;
-}
-
 export function loadTokenPrice(token: Token): Token {
     const networkName = dataSource.network();
     const oracleAddress = ORACLES.get(networkName) as string;

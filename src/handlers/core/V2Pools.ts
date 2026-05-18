@@ -10,7 +10,7 @@ import {
 } from '../../../generated/templates/Pool/V2Pool';
 import { BD_ZERO, BI_ONE, BI_ZERO, ONE_ADDRESS, ZERO_ADDRESS } from '../../utils/constants';
 import { divideByBase } from '../../utils/math';
-import { deriveBurnId, deriveMintId, loadBundlePrice, loadTokenPrice } from '../../utils/misc';
+import { loadBundlePrice, loadTokenPrice } from '../../utils/misc';
 import {
     createLPPosition,
     updateOverallDayData,
@@ -173,7 +173,7 @@ export function handleMint(event: MintEvent): void {
         transaction.save();
     }
 
-    const mintId = deriveMintId(transaction.id);
+    const mintId = `mint-${transaction.id}`;
     const mint = Mint.load(mintId) as Mint;
     mint.amount0 = amount0;
     mint.amount1 = amount1;
@@ -304,7 +304,7 @@ export function handleBurn(event: BurnEvent): void {
         transaction.save();
     }
 
-    const burnId = deriveBurnId(transaction.id);
+    const burnId = `burn-${transaction.id}`;
     const burn = Burn.load(burnId) as Burn;
     burn.logIndex = event.logIndex;
     burn.amount0 = token0Amount;
@@ -374,7 +374,7 @@ export function handleTransfer(event: TransferEvent): void {
         pool.totalSupply = pool.totalSupply.plus(value);
         pool.save();
 
-        const mintId = deriveMintId(transaction.id);
+        const mintId = `mint-${transaction.id}`;
         const mint = new Mint(mintId);
         mint.transaction = transaction.id;
         mint.timestamp = event.block.timestamp;
@@ -385,7 +385,7 @@ export function handleTransfer(event: TransferEvent): void {
     }
 
     if (event.params.to.toHex() === pool.id) {
-        const burnId = deriveBurnId(transaction.id);
+        const burnId = `burn-${transaction.id}`;
         const burn = new Burn(burnId);
         burn.transaction = transaction.id;
         burn.pool = pool.id;
@@ -401,7 +401,7 @@ export function handleTransfer(event: TransferEvent): void {
         pool.totalSupply = pool.totalSupply.minus(value);
         pool.save();
 
-        const burnId = deriveBurnId(transaction.id);
+        const burnId = `burn-${transaction.id}`;
         let burn = Burn.load(burnId);
         if (burn && burn.needsComplete) {
             burn.liquidity = value;

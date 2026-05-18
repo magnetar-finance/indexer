@@ -1,8 +1,8 @@
-import { Burn, CLPosition, Mint, Pool, Statistics, Swap, Token, Transaction } from '../../../generated/schema';
+import { Burn, Mint, Pool, Statistics, Swap, Token, Transaction } from '../../../generated/schema';
 import { Swap as SwapEvent, Mint as MintEvent, Burn as BurnEvent } from '../../../generated/templates/CLPool/CLPool';
 import { BD_ZERO, BI_ONE, BI_ZERO } from '../../utils/constants';
 import { divideByBase } from '../../utils/math';
-import { deriveBurnId, deriveCLPosId, deriveMintId, loadBundlePrice, loadTokenPrice } from '../../utils/misc';
+import { loadBundlePrice, loadTokenPrice } from '../../utils/misc';
 import {
     createLPPosition,
     updateOverallDayData,
@@ -10,6 +10,7 @@ import {
     updatePoolHourData,
     updateTokenDayData,
 } from '../../utils/mutations';
+import { setItemInStorage } from '../../utils/storage';
 
 export function handleSwap(event: SwapEvent): void {
     const pool = Pool.load(event.address.toHex()) as Pool;
@@ -193,7 +194,7 @@ export function handleMint(event: MintEvent): void {
         transaction.save();
     }
 
-    const mintId = deriveMintId(transaction.id);
+    const mintId = `mint-${transaction.id}`;
     const mint = new Mint(mintId);
     mint.transaction = transaction.id;
     mint.timestamp = event.block.timestamp;
@@ -207,10 +208,7 @@ export function handleMint(event: MintEvent): void {
     mint.logIndex = event.logIndex;
     mint.save();
 
-    const clPositionId = deriveCLPosId(event.transaction.hash.toHex());
-    const clPosition = new CLPosition(clPositionId);
-    clPosition.pool = pool.id;
-    clPosition.save();
+    setItemInStorage(transaction.id, pool.id); // We'll use this reference in the NFPM mint handler to determine which pool the position belongs to
 
     createLPPosition(event, event.params.owner, BI_ZERO, null);
 }
@@ -280,7 +278,7 @@ export function handleBurn(event: BurnEvent): void {
         transaction.save();
     }
 
-    const burnId = deriveBurnId(transaction.id);
+    const burnId = `burn-${transaction.id}`;
     const burn = new Burn(burnId);
     burn.transaction = transaction.id;
     burn.timestamp = event.block.timestamp;
