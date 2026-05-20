@@ -1,4 +1,5 @@
-import { Address, dataSource, log } from '@graphprotocol/graph-ts';
+import { Address, dataSource } from '@graphprotocol/graph-ts';
+import { log } from 'matchstick-as';
 import { Oracle } from '../../generated/PoolFactory/Oracle';
 import { Bundle, Token } from '../../generated/schema';
 import { ORACLES, WETH, BD_ONE } from './constants';

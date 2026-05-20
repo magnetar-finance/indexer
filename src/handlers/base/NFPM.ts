@@ -7,45 +7,63 @@ import {
 } from '../../../generated/NonfungiblePositionManager/NonfungiblePositionManager';
 import { CLPosition, LiquidityPosition, User } from '../../../generated/schema';
 import { getItemFromStorage, nullifyItem } from '../../utils/storage';
+import { log } from 'matchstick-as';
 
 export function handleTransfer(event: TransferEvent): void {
     const sender = event.params.from;
     const recipient = event.params.to;
-    const isBurn = recipient.toHex() === ZERO_ADDRESS;
-    const isTransfer = sender.toHex() !== ZERO_ADDRESS && recipient.toHex() !== ZERO_ADDRESS;
-    const isMint = sender.toHex() === ZERO_ADDRESS;
+    const isBurn = recipient.toHex() == ZERO_ADDRESS;
+    const isTransfer = sender.toHex() != ZERO_ADDRESS && recipient.toHex() != ZERO_ADDRESS;
+    const isMint = sender.toHex() == ZERO_ADDRESS;
     const tokenId = event.params.tokenId;
+    log.info('[NFPM] handleTransfer — tokenId: {}, from: {}, to: {}, type: {}', [
+        tokenId.toString(),
+        sender.toHex(),
+        recipient.toHex(),
+        isMint ? 'MINT' : isBurn ? 'BURN' : 'TRANSFER',
+    ]);
     let user = User.load(recipient.toHex());
 
-    if (user === null) {
+    if (user == null) {
         user = new User(recipient.toHex());
         user.address = recipient;
         user.save();
     }
 
-    if (isMint) {
-        const transactionId = event.transaction.hash.toHex();
-        const poolId = getItemFromStorage(transactionId);
+    const transactionId = event.transaction.hash.toHex();
+    const poolId = getItemFromStorage(transactionId);
 
-        if (poolId === null) {
-            return; // Pool not found in storage, cannot proceed
-        }
-        // LP position has been created already, so update
-        const lpId = event.address.toHex() + '-' + poolId;
+    if (isMint && poolId == null) {
+        log.warning('Pool ID not found in storage for transaction {}. Skipping mint event for token ID {}.', [
+            transactionId,
+            tokenId.toString(),
+        ]);
+        return; // Pool not found in storage, cannot proceed
+    }
+
+    let clPosition = CLPosition.load(tokenId.toString());
+    if (clPosition == null) {
+        clPosition = new CLPosition(tokenId.toString());
+        clPosition.pool = poolId as string;
+        clPosition.save();
+    }
+
+    if (isMint) {
+        log.info('[NFPM] Mint confirmed — updating LP position for tokenId: {}, pool: {}', [
+            tokenId.toString(),
+            clPosition.pool,
+        ]);
+        const lpId = event.address.toHex() + '-' + clPosition.pool;
         const lp = LiquidityPosition.load(lpId) as LiquidityPosition;
         lp.account = user.id;
         lp.clPositionTokenId = tokenId;
         lp.save();
 
         nullifyItem(transactionId);
-        // We want to associate the CL position with the tokenId, so we can easily query it in the demanding handlers.
-        const clPosition = new CLPosition(tokenId.toString());
-        clPosition.pool = poolId;
-        clPosition.save();
     }
 
     if (isTransfer) {
-        const clPosition = CLPosition.load(tokenId.toString()) as CLPosition;
+        log.info('[NFPM] Transfer — reassigning LP owner for tokenId: {}', [tokenId.toString()]);
         const lpId = event.address.toHex() + '-' + clPosition.pool;
         const lp = LiquidityPosition.load(lpId) as LiquidityPosition;
         lp.account = user.id;
@@ -53,7 +71,7 @@ export function handleTransfer(event: TransferEvent): void {
     }
 
     if (isBurn) {
-        const clPosition = CLPosition.load(tokenId.toString()) as CLPosition;
+        log.info('[NFPM] Burn — clearing LP position for tokenId: {}', [tokenId.toString()]);
         const lpId = event.address.toHex() + '-' + clPosition.pool;
         const lp = LiquidityPosition.load(lpId) as LiquidityPosition;
         lp.account = null;
@@ -64,6 +82,10 @@ export function handleTransfer(event: TransferEvent): void {
 
 export function handleIncreaseLiquidity(event: IncreaseLiquidityEvent): void {
     const tokenId = event.params.tokenId;
+    log.info('[NFPM] handleIncreaseLiquidity — tokenId: {}, liquidity: {}', [
+        tokenId.toString(),
+        event.params.liquidity.toString(),
+    ]);
     const clPosition = CLPosition.load(tokenId.toString()) as CLPosition;
     const lpId = event.address.toHex() + '-' + clPosition.pool;
     const lp = LiquidityPosition.load(lpId) as LiquidityPosition;
@@ -75,6 +97,10 @@ export function handleIncreaseLiquidity(event: IncreaseLiquidityEvent): void {
 
 export function handleDecreaseLiquidity(event: DecreaseLiquidityEvent): void {
     const tokenId = event.params.tokenId;
+    log.info('[NFPM] handleDecreaseLiquidity — tokenId: {}, liquidity: {}', [
+        tokenId.toString(),
+        event.params.liquidity.toString(),
+    ]);
     const clPosition = CLPosition.load(tokenId.toString()) as CLPosition;
     const lpId = event.address.toHex() + '-' + clPosition.pool;
     const lp = LiquidityPosition.load(lpId) as LiquidityPosition;

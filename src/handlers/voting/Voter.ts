@@ -1,4 +1,5 @@
-import { Address, log } from '@graphprotocol/graph-ts';
+import { Address } from '@graphprotocol/graph-ts';
+import { log } from 'matchstick-as';
 import {
     GaugeCreated as GaugeCreatedEvent,
     GaugeKilled as GaugeKilledEvent,
@@ -20,15 +21,20 @@ export function handleGaugeCreated(event: GaugeCreatedEvent): void {
     const id = event.params.gauge.toHex();
     const poolAddress = event.params.pool;
     const poolId = poolAddress.toHex();
+    log.info('[Voter] handleGaugeCreated — gauge: {}, pool: {}', [id, poolId]);
     const pool = Pool.load(poolId) as Pool;
     const gaugeContract = GaugeContract.bind(event.params.gauge);
     const rewardTokenResult = gaugeContract.try_rewardToken();
-    if (rewardTokenResult.reverted) return;
+    if (rewardTokenResult.reverted) {
+        log.warning('[Voter] rewardToken call reverted for gauge {}', [id]);
+        return;
+    }
     const rewardTokenAddress = rewardTokenResult.value;
     const rewardTokenId = rewardTokenAddress.toHex();
     let rewardToken = Token.load(rewardTokenId);
 
-    if (rewardToken === null) {
+    if (rewardToken == null) {
+        log.info('[Voter] Creating new reward token entity: {}', [rewardTokenId]);
         rewardToken = new Token(rewardTokenId);
         // Contract
         const contract = ERC20.bind(rewardTokenAddress);
@@ -37,7 +43,7 @@ export function handleGaugeCreated(event: GaugeCreatedEvent): void {
         const name = contract.try_name();
 
         if (symbol.reverted || decimals.reverted || name.reverted) {
-            log.debug('Could not fetch token details', []);
+            log.warning('[Voter] Could not fetch reward token details for {}', [rewardTokenId]);
             return;
         }
 
@@ -75,11 +81,12 @@ export function handleGaugeCreated(event: GaugeCreatedEvent): void {
     pool.gauge = gauge.id;
     pool.save();
 
-    if (pool.poolType === 'CONCENTRATED') {
+    if (pool.poolType == 'CONCENTRATED') {
         CLGaugeTemplate.create(event.params.gauge);
     } else {
         GaugeTemplate.create(event.params.gauge);
     }
+    log.info('[Voter] Gauge {} created for pool {} (type: {})', [id, poolId, pool.poolType]);
 
     // Voting rewards
     const feeVotingReward = new VotingRewards(gauge.feeVotingReward.toHex());
@@ -98,21 +105,28 @@ export function handleGaugeCreated(event: GaugeCreatedEvent): void {
 
 export function handleGaugeKilled(event: GaugeKilledEvent): void {
     const gaugeId = event.params.gauge.toHex();
+    log.info('[Voter] handleGaugeKilled — gauge: {}', [gaugeId]);
     const gauge = Gauge.load(gaugeId);
-    if (gauge === null) return;
+    if (gauge == null) return;
     gauge.isAlive = false;
     gauge.save();
 }
 
 export function handleGaugeRevived(event: GaugeRevivedEvent): void {
     const gaugeId = event.params.gauge.toHex();
+    log.info('[Voter] handleGaugeRevived — gauge: {}', [gaugeId]);
     const gauge = Gauge.load(gaugeId);
-    if (gauge === null) return;
+    if (gauge == null) return;
     gauge.isAlive = true;
     gauge.save();
 }
 
 export function handleVoted(event: VotedEvent): void {
+    log.info('[Voter] handleVoted — pool: {}, tokenId: {}, weight: {}', [
+        event.params.pool.toHex(),
+        event.params.tokenId.toString(),
+        event.params.weight.toString(),
+    ]);
     const pool = Pool.load(event.params.pool.toHex()) as Pool;
     const lock = LockPosition.load(event.params.tokenId.toString()) as LockPosition;
     const weight = divideByBase(event.params.weight);
