@@ -1,5 +1,5 @@
 import { log } from 'matchstick-as';
-import { Burn, Mint, Pool, Statistics, Swap, Token, Transaction } from '../../../generated/schema';
+import { Burn, CLPosition, Mint, Pool, Statistics, Swap, Token, Transaction } from '../../../generated/schema';
 import { Swap as SwapEvent, Mint as MintEvent, Burn as BurnEvent } from '../../../generated/templates/CLPool/CLPool';
 import { BD_ZERO, BI_ONE, BI_ZERO } from '../../utils/constants';
 import { divideByBase } from '../../utils/math';
@@ -11,7 +11,8 @@ import {
     updatePoolHourData,
     updateTokenDayData,
 } from '../../utils/mutations';
-import { setItemInStorage } from '../../utils/storage';
+import { getItemFromStorage, nullifyItem, setItemInStorage } from '../../utils/storage';
+import { BigInt } from '@graphprotocol/graph-ts';
 
 export function handleSwap(event: SwapEvent): void {
     const pool = Pool.load(event.address.toHex()) as Pool;
@@ -211,14 +212,63 @@ export function handleMint(event: MintEvent): void {
     mint.logIndex = event.logIndex;
     mint.save();
 
-    setItemInStorage(transaction.id, pool.id); // We'll use this reference in the NFPM mint handler to determine which pool the position belongs to
+    const tokenId = getItemFromStorage(transaction.id); // This should have been set in the NFPM mint handler
+
+    if (tokenId == null) {
+        log.warning(
+            '[CLPool] handleMint — No token ID found in storage for transaction: {}. Cannot create LP position.',
+            [transaction.id],
+        );
+        return;
+    }
+
+    const newUserId = getItemFromStorage(tokenId as string); // This should have been set in the NFPM mint handler
+
+    if (newUserId == null) {
+        log.warning('[CLPool] handleMint — No user ID found in storage for token ID: {}. Cannot create LP position.', [
+            tokenId as string,
+        ]);
+        return;
+    }
+
+    const newLiquidity = getItemFromStorage(`new-liquidity:${tokenId as string}`); // This should have been set in the NFPM increaseLiquidity handler
+
+    if (newLiquidity == null) {
+        log.warning(
+            '[CLPool] handleMint — No liquidity amount found in storage for token ID: {}. Cannot create LP position.',
+            [tokenId as string],
+        );
+        return;
+    }
+
     log.debug('[CLPool] Mint saved — pool: {}, amount0: {}, amount1: {}', [
         pool.id,
         amount0.toString(),
         amount1.toString(),
     ]);
 
-    createLPPosition(event, event.params.owner, BI_ZERO, null);
+    const clPosition = new CLPosition(tokenId as string);
+    clPosition.pool = pool.id;
+    clPosition.save();
+
+    log.info('[CLPool] Creating LP position for new mint — tokenId: {}, owner: {}, liquidity: {}', [
+        tokenId as string,
+        event.params.owner.toHex(),
+        newLiquidity as string,
+    ]);
+
+    const lpPosition = createLPPosition(
+        event,
+        event.params.owner,
+        BigInt.fromString(newLiquidity as string),
+        BigInt.fromString(tokenId as string),
+    );
+    lpPosition.account = newUserId;
+    lpPosition.save();
+
+    nullifyItem(tokenId as string);
+    nullifyItem(`new-liquidity:${tokenId as string}`);
+    nullifyItem(transaction.id);
 }
 
 export function handleBurn(event: BurnEvent): void {
