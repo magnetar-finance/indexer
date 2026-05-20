@@ -1,3 +1,4 @@
+import { log } from 'matchstick-as';
 import { Burn, Mint, Pool, Statistics, Swap, Token, Transaction } from '../../../generated/schema';
 import { Swap as SwapEvent, Mint as MintEvent, Burn as BurnEvent } from '../../../generated/templates/CLPool/CLPool';
 import { BD_ZERO, BI_ONE, BI_ZERO } from '../../utils/constants';
@@ -14,7 +15,7 @@ import { setItemInStorage } from '../../utils/storage';
 
 export function handleSwap(event: SwapEvent): void {
     const pool = Pool.load(event.address.toHex()) as Pool;
-    // Bundle price
+    log.info('[CLPool] handleSwap — pool: {}', [event.address.toHex()]);
     loadBundlePrice();
     let token0 = Token.load(pool.token0) as Token;
     let token1 = Token.load(pool.token1) as Token;
@@ -71,7 +72,7 @@ export function handleSwap(event: SwapEvent): void {
     const hash = event.transaction.hash.toHex();
     let transaction = Transaction.load(hash);
 
-    if (transaction === null) {
+    if (transaction == null) {
         transaction = new Transaction(hash);
         transaction.block = event.block.number;
         transaction.timestamp = event.block.timestamp;
@@ -94,6 +95,7 @@ export function handleSwap(event: SwapEvent): void {
     swap.amountUSD = amount0USD.plus(amount1USD);
     swap.logIndex = event.logIndex;
     swap.save();
+    log.debug('[CLPool] Swap saved — id: {}, amountUSD: {}', [swapId, swap.amountUSD.toString()]);
 
     // Statistics
     const statistics = Statistics.load('1') as Statistics;
@@ -138,6 +140,7 @@ export function handleSwap(event: SwapEvent): void {
 
 export function handleMint(event: MintEvent): void {
     const pool = Pool.load(event.address.toHex()) as Pool;
+    log.info('[CLPool] handleMint — pool: {}, sender: {}', [event.address.toHex(), event.params.sender.toHex()]);
     const statistics = Statistics.load('1') as Statistics;
     let token0 = Token.load(pool.token0) as Token;
     let token1 = Token.load(pool.token1) as Token;
@@ -186,7 +189,7 @@ export function handleMint(event: MintEvent): void {
     const hash = event.transaction.hash.toHex();
     let transaction = Transaction.load(hash);
 
-    if (transaction === null) {
+    if (transaction == null) {
         transaction = new Transaction(hash);
         transaction.block = event.block.number;
         transaction.timestamp = event.block.timestamp;
@@ -209,12 +212,18 @@ export function handleMint(event: MintEvent): void {
     mint.save();
 
     setItemInStorage(transaction.id, pool.id); // We'll use this reference in the NFPM mint handler to determine which pool the position belongs to
+    log.debug('[CLPool] Mint saved — pool: {}, amount0: {}, amount1: {}', [
+        pool.id,
+        amount0.toString(),
+        amount1.toString(),
+    ]);
 
     createLPPosition(event, event.params.owner, BI_ZERO, null);
 }
 
 export function handleBurn(event: BurnEvent): void {
     const pool = Pool.load(event.address.toHex()) as Pool;
+    log.info('[CLPool] handleBurn — pool: {}, owner: {}', [event.address.toHex(), event.params.owner.toHex()]);
     const statistics = Statistics.load('1') as Statistics;
     const token0 = Token.load(pool.token0) as Token;
     const token1 = Token.load(pool.token1) as Token;
@@ -270,7 +279,7 @@ export function handleBurn(event: BurnEvent): void {
     const hash = event.transaction.hash.toHex();
     let transaction = Transaction.load(hash);
 
-    if (transaction === null) {
+    if (transaction == null) {
         transaction = new Transaction(hash);
         transaction.block = event.block.number;
         transaction.timestamp = event.block.timestamp;

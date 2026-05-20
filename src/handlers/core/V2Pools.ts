@@ -1,3 +1,4 @@
+import { log } from 'matchstick-as';
 import { ERC20 } from '../../../generated/PoolFactory/ERC20';
 import { Burn, Mint, Pool, Statistics, Swap, Token, Transaction } from '../../../generated/schema';
 import {
@@ -21,6 +22,7 @@ import {
 
 export function handleSwap(event: SwapEvent): void {
     const pool = Pool.load(event.address.toHex()) as Pool;
+    log.info('[V2Pool] handleSwap — pool: {}', [event.address.toHex()]);
     // Load eth price first
     loadBundlePrice();
     // Tokens
@@ -63,7 +65,7 @@ export function handleSwap(event: SwapEvent): void {
     const hash = event.transaction.hash.toHex();
     let transaction = Transaction.load(hash);
 
-    if (transaction === null) {
+    if (transaction == null) {
         transaction = new Transaction(hash);
         transaction.block = event.block.number;
         transaction.timestamp = event.block.timestamp;
@@ -130,6 +132,7 @@ export function handleSwap(event: SwapEvent): void {
 
 export function handleMint(event: MintEvent): void {
     const pool = Pool.load(event.address.toHex()) as Pool;
+    log.info('[V2Pool] handleMint — pool: {}', [event.address.toHex()]);
     // Load eth price first
     loadBundlePrice();
     // Tokens
@@ -165,7 +168,7 @@ export function handleMint(event: MintEvent): void {
     const hash = event.transaction.hash.toHex();
     let transaction = Transaction.load(hash);
 
-    if (transaction === null) {
+    if (transaction == null) {
         transaction = new Transaction(hash);
         transaction.block = event.block.number;
         transaction.timestamp = event.block.timestamp;
@@ -218,6 +221,11 @@ export function handleMint(event: MintEvent): void {
 
 export function handleSync(event: SyncEvent): void {
     const pool = Pool.load(event.address.toHex()) as Pool;
+    log.info('[V2Pool] handleSync — pool: {}, reserve0: {}, reserve1: {}', [
+        event.address.toHex(),
+        event.params.reserve0.toString(),
+        event.params.reserve1.toString(),
+    ]);
     // Load eth price first
 
     loadBundlePrice();
@@ -268,6 +276,7 @@ export function handleSync(event: SyncEvent): void {
 
 export function handleBurn(event: BurnEvent): void {
     const pool = Pool.load(event.address.toHex()) as Pool;
+    log.info('[V2Pool] handleBurn — pool: {}', [event.address.toHex()]);
     // Load eth price first
 
     loadBundlePrice();
@@ -296,7 +305,7 @@ export function handleBurn(event: BurnEvent): void {
     const hash = event.transaction.hash.toHex();
     let transaction = Transaction.load(hash);
 
-    if (transaction === null) {
+    if (transaction == null) {
         transaction = new Transaction(hash);
         transaction.block = event.block.number;
         transaction.timestamp = event.block.timestamp;
@@ -322,6 +331,11 @@ export function handleBurn(event: BurnEvent): void {
 
 export function handleFees(event: FeesEvent): void {
     const pool = Pool.load(event.address.toHex()) as Pool;
+    log.info('[V2Pool] handleFees — pool: {}, amount0: {}, amount1: {}', [
+        event.address.toHex(),
+        event.params.amount0.toString(),
+        event.params.amount1.toString(),
+    ]);
     // Load eth price first
 
     loadBundlePrice();
@@ -349,6 +363,11 @@ export function handleFees(event: FeesEvent): void {
 
 export function handleTransfer(event: TransferEvent): void {
     const pool = Pool.load(event.address.toHex()) as Pool;
+    log.info('[V2Pool] handleTransfer — pool: {}, from: {}, to: {}', [
+        event.address.toHex(),
+        event.params.from.toHex(),
+        event.params.to.toHex(),
+    ]);
     // Load eth price first
 
     loadBundlePrice();
@@ -359,7 +378,7 @@ export function handleTransfer(event: TransferEvent): void {
     const txId = hash.toHex();
     let transaction = Transaction.load(txId);
 
-    if (transaction === null) {
+    if (transaction == null) {
         transaction = new Transaction(txId);
         transaction.block = event.block.number;
         transaction.timestamp = event.block.timestamp;
@@ -367,7 +386,7 @@ export function handleTransfer(event: TransferEvent): void {
         transaction.save();
     }
 
-    const isMint = event.params.from.toHex() == ZERO_ADDRESS && event.params.to.toHex() !== ONE_ADDRESS;
+    const isMint = event.params.from.toHex() == ZERO_ADDRESS && event.params.to.toHex() != ONE_ADDRESS;
     const isBurn = event.params.to.toHex() == ZERO_ADDRESS;
 
     if (isMint) {
@@ -384,7 +403,7 @@ export function handleTransfer(event: TransferEvent): void {
         mint.save();
     }
 
-    if (event.params.to.toHex() === pool.id) {
+    if (event.params.to.toHex() == pool.id) {
         const burnId = `burn-${transaction.id}`;
         const burn = new Burn(burnId);
         burn.transaction = transaction.id;
@@ -397,7 +416,7 @@ export function handleTransfer(event: TransferEvent): void {
         burn.save();
     }
 
-    if (isBurn && event.params.from.toHex() === pool.id) {
+    if (isBurn && event.params.from.toHex() == pool.id) {
         pool.totalSupply = pool.totalSupply.minus(value);
         pool.save();
 
@@ -420,14 +439,14 @@ export function handleTransfer(event: TransferEvent): void {
         }
     }
 
-    if (!isMint && event.params.from.toHex() !== pool.id) {
+    if (!isMint && event.params.from.toHex() != pool.id) {
         const userAddress = event.params.from;
         const balance = poolContract.try_balanceOf(userAddress);
         const amount = balance.reverted ? BI_ZERO : balance.value;
         createLPPosition(event, userAddress, amount, null);
     }
 
-    if (!isBurn && event.params.to.toHex() !== pool.id) {
+    if (!isBurn && event.params.to.toHex() != pool.id) {
         const userAddress = event.params.to;
         const balance = poolContract.try_balanceOf(userAddress);
         const amount = balance.reverted ? BI_ZERO : balance.value;

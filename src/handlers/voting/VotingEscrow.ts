@@ -13,20 +13,22 @@ import {
 import { LockPosition, User } from '../../../generated/schema';
 import { BD_ZERO, BI_ZERO, LOCK_MAX_TIME, WEEK, ZERO_ADDRESS } from '../../utils/constants';
 import { divideByBase } from '../../utils/math';
+import { log } from 'matchstick-as';
 
 export function handleTransfer(event: TransferEvent): void {
     const recipient = event.params.to;
     const tokenId = event.params.tokenId;
+    log.info('[VotingEscrow] handleTransfer — tokenId: {}, to: {}', [tokenId.toString(), recipient.toHex()]);
     let lock = LockPosition.load(tokenId.toString());
     let user = User.load(recipient.toHex());
 
-    if (user === null) {
+    if (user == null) {
         user = new User(recipient.toHex());
         user.address = recipient;
         user.save();
     }
 
-    if (lock === null) {
+    if (lock == null) {
         lock = new LockPosition(tokenId.toString());
         lock.lockId = tokenId;
         lock.lockType = 'NORMAL';
@@ -47,6 +49,10 @@ export function handleTransfer(event: TransferEvent): void {
 
 export function handleDeposit(event: DepositEvent): void {
     const tokenId = event.params.tokenId;
+    log.info('[VotingEscrow] handleDeposit — tokenId: {}, value: {}', [
+        tokenId.toString(),
+        event.params.value.toString(),
+    ]);
     const lock = LockPosition.load(tokenId.toString()) as LockPosition;
     const amount = divideByBase(event.params.value);
     lock.position = lock.position.plus(amount);
@@ -56,6 +62,10 @@ export function handleDeposit(event: DepositEvent): void {
 
 export function handleWithdraw(event: WithdrawEvent): void {
     const tokenId = event.params.tokenId;
+    log.info('[VotingEscrow] handleWithdraw — tokenId: {}, value: {}', [
+        tokenId.toString(),
+        event.params.value.toString(),
+    ]);
     const lock = LockPosition.load(tokenId.toString()) as LockPosition;
     const amount = divideByBase(event.params.value);
     lock.position = lock.position.minus(amount);
@@ -66,6 +76,11 @@ export function handleWithdraw(event: WithdrawEvent): void {
 export function handleDepositManaged(event: DepositManagedEvent): void {
     const lockId = event.params._tokenId;
     const mLockId = event.params._mTokenId;
+    log.info('[VotingEscrow] handleDepositManaged — tokenId: {}, mTokenId: {}, weight: {}', [
+        lockId.toString(),
+        mLockId.toString(),
+        event.params._weight.toString(),
+    ]);
     const lock = LockPosition.load(lockId.toString()) as LockPosition;
     const mLock = LockPosition.load(mLockId.toString()) as LockPosition;
     const amount = divideByBase(event.params._weight);
@@ -77,6 +92,7 @@ export function handleDepositManaged(event: DepositManagedEvent): void {
 
 export function handleCreateManaged(event: CreateManagedEvent): void {
     const lockId = event.params._mTokenId;
+    log.info('[VotingEscrow] handleCreateManaged — mTokenId: {}', [lockId.toString()]);
     const lock = LockPosition.load(lockId.toString()) as LockPosition;
     lock.freeRewardManager = event.params._freeManagedReward;
     lock.lockRewardManager = event.params._lockedManagedReward;
@@ -87,6 +103,11 @@ export function handleCreateManaged(event: CreateManagedEvent): void {
 export function handleWithdrawManaged(event: WithdrawManagedEvent): void {
     const lockId = event.params._tokenId;
     const mLockId = event.params._mTokenId;
+    log.info('[VotingEscrow] handleWithdrawManaged — tokenId: {}, mTokenId: {}, weight: {}', [
+        lockId.toString(),
+        mLockId.toString(),
+        event.params._weight.toString(),
+    ]);
     const lock = LockPosition.load(lockId.toString()) as LockPosition;
     const mLock = LockPosition.load(mLockId.toString()) as LockPosition;
     const amount = divideByBase(event.params._weight);
@@ -102,6 +123,7 @@ export function handleWithdrawManaged(event: WithdrawManagedEvent): void {
 export function handleMerge(event: MergeEvent): void {
     const fromLockId = event.params._from;
     const toLockId = event.params._to;
+    log.info('[VotingEscrow] handleMerge — from: {}, to: {}', [fromLockId.toString(), toLockId.toString()]);
     const fromLock = LockPosition.load(fromLockId.toString()) as LockPosition;
     const toLock = LockPosition.load(toLockId.toString()) as LockPosition;
     const amountFrom = divideByBase(event.params._amountFrom);
@@ -115,6 +137,11 @@ export function handleMerge(event: MergeEvent): void {
 
 export function handleSplit(event: SplitEvent): void {
     const fromLockId = event.params._from;
+    log.info('[VotingEscrow] handleSplit — from: {}, split1: {}, split2: {}', [
+        fromLockId.toString(),
+        event.params._tokenId1.toString(),
+        event.params._tokenId2.toString(),
+    ]);
     const lock1Id = event.params._tokenId1;
     const lock2Id = event.params._tokenId2;
     const fromLock = LockPosition.load(fromLockId.toString()) as LockPosition;
@@ -138,6 +165,7 @@ export function handleSplit(event: SplitEvent): void {
 
 export function handleLockPermanent(event: LockPermanentEvent): void {
     const lockId = event.params._tokenId;
+    log.info('[VotingEscrow] handleLockPermanent — tokenId: {}', [lockId.toString()]);
     const lock = LockPosition.load(lockId.toString()) as LockPosition;
     lock.permanent = true;
     lock.unlockTime = BI_ZERO;
@@ -146,6 +174,7 @@ export function handleLockPermanent(event: LockPermanentEvent): void {
 
 export function handleUnlockPermanent(event: UnlockPermanentEvent): void {
     const lockId = event.params._tokenId;
+    log.info('[VotingEscrow] handleUnlockPermanent — tokenId: {}', [lockId.toString()]);
     const lock = LockPosition.load(lockId.toString()) as LockPosition;
     lock.permanent = false;
     lock.unlockTime = event.params._ts.plus(LOCK_MAX_TIME).div(WEEK).times(WEEK);

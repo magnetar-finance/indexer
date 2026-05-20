@@ -1,4 +1,5 @@
-import { Address, BigInt, log } from '@graphprotocol/graph-ts';
+import { Address, BigInt } from '@graphprotocol/graph-ts';
+import { log } from 'matchstick-as';
 import { PoolCreated as V3PoolCreatedEvent } from '../../../generated/CLFactory/CLFactory';
 import { Bundle, Pool, Statistics, Token } from '../../../generated/schema';
 import { ERC20 } from '../../../generated/CLFactory/ERC20';
@@ -9,12 +10,13 @@ export function handlePoolCreated(event: V3PoolCreatedEvent): void {
     const id = event.params.pool.toHex();
     const token0Id = event.params.token0.toHex();
     const token1Id = event.params.token1.toHex();
+    log.info('[CLFactory] handlePoolCreated — pool: {}, token0: {}, token1: {}', [id, token0Id, token1Id]);
     let token0 = Token.load(token0Id);
     let token1 = Token.load(token1Id);
     let statistics = Statistics.load('1');
     let bundle = Bundle.load('1');
 
-    if (statistics === null) {
+    if (statistics == null) {
         statistics = new Statistics('1');
         statistics.totalPairsCreated = BI_ZERO;
         statistics.totalVolumeLockedUSD = BD_ZERO;
@@ -26,12 +28,13 @@ export function handlePoolCreated(event: V3PoolCreatedEvent): void {
         statistics.totalBribesUSD = BD_ZERO;
     }
 
-    if (bundle === null) {
+    if (bundle == null) {
         bundle = new Bundle('1');
         bundle.ethPrice = BD_ZERO;
     }
 
-    if (token0 === null) {
+    if (token0 == null) {
+        log.info('[CLFactory] Creating new token0 entity: {}', [token0Id]);
         token0 = new Token(token0Id);
         // Contract
         const contract = ERC20.bind(Address.fromString(token0Id));
@@ -40,7 +43,7 @@ export function handlePoolCreated(event: V3PoolCreatedEvent): void {
         const name = contract.try_name();
 
         if (symbol.reverted || decimals.reverted || name.reverted) {
-            log.debug('Could not fetch token details', []);
+            log.warning('[CLFactory] Could not fetch token0 details for {}', [token0Id]);
             return;
         }
 
@@ -60,7 +63,8 @@ export function handlePoolCreated(event: V3PoolCreatedEvent): void {
         token0.save();
     }
 
-    if (token1 === null) {
+    if (token1 == null) {
+        log.info('[CLFactory] Creating new token1 entity: {}', [token1Id]);
         token1 = new Token(token1Id);
         // Contract
         const contract = ERC20.bind(Address.fromString(token1Id));
@@ -69,7 +73,7 @@ export function handlePoolCreated(event: V3PoolCreatedEvent): void {
         const name = contract.try_name();
 
         if (symbol.reverted || decimals.reverted || name.reverted) {
-            log.debug('Could not fetch token details', []);
+            log.warning('[CLFactory] Could not fetch token1 details for {}', [token1Id]);
             return;
         }
 
@@ -89,6 +93,7 @@ export function handlePoolCreated(event: V3PoolCreatedEvent): void {
         token1.save();
     }
 
+    log.info('[CLFactory] Creating CL pool entity: {} ({}/{})', [id, token0.symbol, token1.symbol]);
     const pool = new Pool(id);
     pool.name = `CL-POS-${token0.symbol}/${token1.symbol}`;
     pool.address = Address.fromString(id);
@@ -129,4 +134,8 @@ export function handlePoolCreated(event: V3PoolCreatedEvent): void {
     bundle.save();
 
     CLPoolTemplate.create(event.params.pool);
+    log.info('[CLFactory] CL pool {} created and template instantiated. Total pairs: {}', [
+        id,
+        statistics.totalPairsCreated.toString(),
+    ]);
 }

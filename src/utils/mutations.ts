@@ -1,4 +1,5 @@
 import { ethereum, BigInt, Address } from '@graphprotocol/graph-ts';
+import { log } from 'matchstick-as';
 import {
     OverallDayData,
     PoolDayData,
@@ -22,7 +23,7 @@ export function updateOverallDayData(event: ethereum.Event): OverallDayData {
     const dayStartTimestamp = dayID * 86400;
 
     let overallDayData = OverallDayData.load(dayID.toString());
-    if (overallDayData === null) {
+    if (overallDayData == null) {
         overallDayData = new OverallDayData(dayID.toString());
         overallDayData.feesUSD = BD_ZERO;
         overallDayData.date = dayStartTimestamp;
@@ -48,7 +49,7 @@ export function updatePoolDayData(event: ethereum.Event): PoolDayData {
     const dayPoolID = event.address.toHex().concat('-').concat(BigInt.fromI32(dayID).toString());
     const pool = Pool.load(event.address.toHex()) as Pool;
     let poolDayData = PoolDayData.load(dayPoolID);
-    if (poolDayData === null) {
+    if (poolDayData == null) {
         poolDayData = new PoolDayData(dayPoolID);
         poolDayData.date = dayStartTimestamp;
         poolDayData.dailyTxns = BI_ZERO;
@@ -76,7 +77,7 @@ export function updatePoolHourData(event: ethereum.Event): PoolHourData {
     const hourPoolID = event.address.toHex().concat('-').concat(BigInt.fromI32(hourIndex).toString());
     const pool = Pool.load(event.address.toHex()) as Pool;
     let poolHourData = PoolHourData.load(hourPoolID);
-    if (poolHourData === null) {
+    if (poolHourData == null) {
         poolHourData = new PoolHourData(hourPoolID);
         poolHourData.hourStartUnix = hourStartUnix;
         poolHourData.pool = pool.id;
@@ -104,7 +105,7 @@ export function updateTokenDayData(token: Token, event: ethereum.Event): TokenDa
     const tokenDayID = token.id.toString().concat('-').concat(BigInt.fromI32(dayID).toString());
 
     let tokenDayData = TokenDayData.load(tokenDayID);
-    if (tokenDayData === null) {
+    if (tokenDayData == null) {
         tokenDayData = new TokenDayData(tokenDayID);
         tokenDayData.date = dayStartTimestamp;
         tokenDayData.token = token.id;
@@ -135,7 +136,7 @@ export function createLPPosition(
     const userId = to.toHex();
     let user = User.load(userId);
 
-    if (user === null) {
+    if (user == null) {
         user = new User(userId);
         user.address = to;
         user.save();
@@ -144,7 +145,8 @@ export function createLPPosition(
     const positionId = userId + '-' + poolId;
     let position = LiquidityPosition.load(positionId);
 
-    if (position === null) {
+    if (position == null) {
+        log.debug('[mutations] Creating new LP position: {} for pool: {}', [positionId, poolId]);
         position = new LiquidityPosition(positionId);
         position.pool = pool.id;
         position.account = user.id;
@@ -165,7 +167,7 @@ export function createGaugePosition(event: ethereum.Event, to: Address, amount: 
     const userId = to.toHex();
     let user = User.load(userId);
 
-    if (user === null) {
+    if (user == null) {
         user = new User(userId);
         user.address = to;
         user.save();
@@ -174,7 +176,8 @@ export function createGaugePosition(event: ethereum.Event, to: Address, amount: 
     const positionId = userId + '-' + gaugeId;
     let position = GaugePosition.load(positionId);
 
-    if (position === null) {
+    if (position == null) {
+        log.debug('[mutations] Creating new gauge position: {} for gauge: {}', [positionId, gaugeId]);
         position = new GaugePosition(positionId);
         position.gauge = gauge.id;
         position.account = user.id;

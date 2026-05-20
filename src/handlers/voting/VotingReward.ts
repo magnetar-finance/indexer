@@ -1,4 +1,4 @@
-import { log } from '@graphprotocol/graph-ts';
+import { log } from 'matchstick-as';
 import { ERC20 } from '../../../generated/CLFactory/ERC20';
 import { Gauge, Pool, Statistics, Token, VotingRewards } from '../../../generated/schema';
 import {
@@ -13,9 +13,14 @@ export function handleNotifyReward(event: NotifyRewardEvent): void {
     const votingReward = VotingRewards.load(event.address.toHex()) as VotingRewards;
     const gauge = Gauge.load(votingReward.gauge) as Gauge;
     const pool = Pool.load(gauge.depositPool) as Pool;
+    log.info('[VotingReward] handleNotifyReward — address: {}, reward: {}, amount: {}', [
+        event.address.toHex(),
+        event.params.reward.toHex(),
+        event.params.amount.toString(),
+    ]);
     let token = Token.load(event.params.reward.toHex());
 
-    if (token === null) {
+    if (token == null) {
         token = new Token(event.params.reward.toHex());
         // Contract
         const contract = ERC20.bind(event.params.reward);
@@ -24,7 +29,7 @@ export function handleNotifyReward(event: NotifyRewardEvent): void {
         const name = contract.try_name();
 
         if (symbol.reverted || decimals.reverted || name.reverted) {
-            log.debug('Could not fetch token details', []);
+            log.warning('[VotingReward] Could not fetch reward token details for {}', [event.params.reward.toHex()]);
             return;
         }
 
@@ -50,12 +55,17 @@ export function handleNotifyReward(event: NotifyRewardEvent): void {
     const amountUSD = amount.times(token.derivedUSD);
     const amountETH = amount.times(token.derivedETH);
 
-    const isFee = votingReward.votingRewardsType === 'FEE';
-    const isCL = pool.poolType === 'CONCENTRATED';
+    const isFee = votingReward.votingRewardsType == 'FEE';
+    const isCL = pool.poolType == 'CONCENTRATED';
+    log.debug('[VotingReward] NotifyReward classification — type: {}, poolType: {}, amountUSD: {}', [
+        isFee ? 'FEE' : 'BRIBE',
+        pool.poolType,
+        amountUSD.toString(),
+    ]);
     const statistics = Statistics.load('1') as Statistics;
 
     if (isFee) {
-        const isToken0 = token.id === pool.token0;
+        const isToken0 = token.id == pool.token0;
         const reserve0 = isToken0 ? pool.reserve0.minus(amount) : pool.reserve0;
         const reserve1 = !isToken0 ? pool.reserve1.minus(amount) : pool.reserve1;
         const gaugeFees0CurrentEpoch = isToken0
@@ -98,6 +108,11 @@ export function handleClaimRewards(event: ClaimRewardsEvent): void {
     const votingReward = VotingRewards.load(event.address.toHex()) as VotingRewards;
     const gauge = Gauge.load(votingReward.gauge) as Gauge;
     const pool = Pool.load(gauge.depositPool) as Pool;
+    log.info('[VotingReward] handleClaimRewards — address: {}, reward: {}, amount: {}', [
+        event.address.toHex(),
+        event.params.reward.toHex(),
+        event.params.amount.toString(),
+    ]);
     let token = Token.load(event.params.reward.toHex()) as Token;
 
     token = loadTokenPrice(token);
@@ -105,12 +120,12 @@ export function handleClaimRewards(event: ClaimRewardsEvent): void {
     const amount = divideByBase(event.params.amount, token.decimals);
     const amountUSD = amount.times(token.derivedUSD);
 
-    const isFee = votingReward.votingRewardsType === 'FEE';
-    const isCL = pool.poolType === 'CONCENTRATED';
+    const isFee = votingReward.votingRewardsType == 'FEE';
+    const isCL = pool.poolType == 'CONCENTRATED';
     const statistics = Statistics.load('1') as Statistics;
 
     if (isFee) {
-        const isToken0 = token.id === pool.token0;
+        const isToken0 = token.id == pool.token0;
         const gaugeFees0CurrentEpoch = isToken0
             ? pool.gaugeFees0CurrentEpoch.minus(amount)
             : pool.gaugeFees0CurrentEpoch;
