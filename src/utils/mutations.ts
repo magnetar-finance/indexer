@@ -142,7 +142,12 @@ export function createLPPosition(
         user.save();
     }
 
-    const positionId = userId + '-' + poolId;
+    let positionId = userId + '-' + poolId;
+
+    if (tokenId !== null) {
+        positionId = positionId + '-' + tokenId.toString();
+    }
+
     let position = LiquidityPosition.load(positionId);
 
     if (position == null) {
