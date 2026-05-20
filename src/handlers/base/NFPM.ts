@@ -43,7 +43,7 @@ export function handleTransfer(event: TransferEvent): void {
 
     if (isTransfer) {
         log.info('[NFPM] Transfer — reassigning LP owner for tokenId: {}', [tokenId.toString()]);
-        const lpId = event.address.toHex() + '-' + clPosition.pool;
+        const lpId = event.address.toHex() + '-' + clPosition.pool + '-' + tokenId.toString();
         const lp = LiquidityPosition.load(lpId) as LiquidityPosition;
         lp.account = user.id;
         lp.save();
@@ -51,7 +51,7 @@ export function handleTransfer(event: TransferEvent): void {
 
     if (isBurn) {
         log.info('[NFPM] Burn — clearing LP position for tokenId: {}', [tokenId.toString()]);
-        const lpId = event.address.toHex() + '-' + clPosition.pool;
+        const lpId = event.address.toHex() + '-' + clPosition.pool + '-' + tokenId.toString();
         const lp = LiquidityPosition.load(lpId) as LiquidityPosition;
         lp.account = null;
         lp.position = BD_ZERO;
@@ -73,7 +73,7 @@ export function handleIncreaseLiquidity(event: IncreaseLiquidityEvent): void {
         return;
     }
 
-    const lpId = event.address.toHex() + '-' + clPosition.pool;
+    const lpId = event.address.toHex() + '-' + clPosition.pool + '-' + tokenId.toString();
     const lp = LiquidityPosition.load(lpId) as LiquidityPosition;
     const amount = divideByBase(event.params.liquidity);
 
@@ -88,7 +88,7 @@ export function handleDecreaseLiquidity(event: DecreaseLiquidityEvent): void {
         event.params.liquidity.toString(),
     ]);
     const clPosition = CLPosition.load(tokenId.toString()) as CLPosition;
-    const lpId = event.address.toHex() + '-' + clPosition.pool;
+    const lpId = event.address.toHex() + '-' + clPosition.pool + '-' + tokenId.toString();
     const lp = LiquidityPosition.load(lpId) as LiquidityPosition;
     const amount = divideByBase(event.params.liquidity);
 
