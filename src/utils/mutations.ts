@@ -34,7 +34,7 @@ export function updateOverallDayData(event: ethereum.Event): OverallDayData {
     overallDayData.liquidityUSD = statistics.totalVolumeLockedUSD;
     overallDayData.liquidityETH = statistics.totalVolumeLockedETH;
     overallDayData.totalTradeVolumeETH = statistics.totalTradeVolumeETH;
-    overallDayData.totalTradeVolumeUSD = statistics.totalVolumeLockedUSD;
+    overallDayData.totalTradeVolumeUSD = statistics.totalTradeVolumeUSD;
     overallDayData.txCount = overallDayData.txCount.plus(BI_ONE);
 
     overallDayData.save();
