@@ -349,6 +349,7 @@ export function handleBurn(event: BurnEvent): void {
     burn.liquidity = liquidity;
     burn.amountUSD = amount0USD.plus(amount1USD);
     burn.logIndex = event.logIndex;
+    burn.needsComplete = false;
     burn.save();
 
     updateOverallDayData(event);
