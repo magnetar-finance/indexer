@@ -127,6 +127,14 @@ type LockPosition @entity {
     freeRewardManager: Bytes @index
     unlockTime: BigInt!
     totalVoteWeightGiven: BigDecimal! @config(precision: 500, scale: 5)
+    votes: [Vote!]! @derivedFrom(field: "lockPosition")
+}
+
+type Vote @entity {
+    id: ID!
+    lockPosition: LockPosition! @index
+    pool: Pool! @index
+    weight: BigDecimal! @config(precision: 500, scale: 5)
 }
 
 type Token @entity {
