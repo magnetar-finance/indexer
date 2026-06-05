@@ -6,7 +6,7 @@ import {
     GaugeRevived as GaugeRevivedEvent,
     Voted as VotedEvent,
 } from '../../../generated/Voter/Voter';
-import { Gauge, LockPosition, Pool, Token, VotingRewards } from '../../../generated/schema';
+import { Gauge, LockPosition, Pool, Token, Vote, VotingRewards } from '../../../generated/schema';
 import { ERC20 } from '../../../generated/CLFactory/ERC20';
 import { Gauge as GaugeContract } from '../../../generated/templates/Gauge/Gauge';
 import { BD_ZERO, BI_ZERO } from '../../utils/constants';
@@ -134,4 +134,17 @@ export function handleVoted(event: VotedEvent): void {
     lock.totalVoteWeightGiven = lock.totalVoteWeightGiven.plus(weight);
     pool.save();
     lock.save();
+
+    const voteId = `vote-${lock.id}-${pool.id}`;
+    let vote = Vote.load(voteId);
+
+    if (vote == null) {
+        vote = new Vote(voteId);
+        vote.weight = BD_ZERO;
+        vote.lockPosition = lock.id;
+        vote.pool = pool.id;
+    }
+
+    vote.weight = vote.weight.plus(weight);
+    vote.save();
 }

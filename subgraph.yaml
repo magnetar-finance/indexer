@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: PoolFactory
-    network: liteforge
+    network: arc-testnet
     source:
       abi: PoolFactory
       address: "0xE41d241720FEE7cD6BDfA9aB3204d23687703CD5"
-      startBlock: 12969305
+      startBlock: 42847380
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -31,11 +31,11 @@ dataSources:
       file: ./src/handlers/base/V2PoolFactory.ts
   - kind: ethereum
     name: CLFactory
-    network: liteforge
+    network: arc-testnet
     source:
       abi: CLFactory
-      address: "0xC05b371680057B55e23C27d23453592cdf972Ec1"
-      startBlock: 12969305
+      address: "0xf6a6a429a0b9676293Df0E3616A6a33cA673b5C3"
+      startBlock: 42847380
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -56,11 +56,11 @@ dataSources:
       file: ./src/handlers/base/CLFactory.ts
   - kind: ethereum
     name: Voter
-    network: liteforge
+    network: arc-testnet
     source:
       abi: Voter
       address: "0x2914f5e8A40047C7421aaDad35CDB06870ecA0c5"
-      startBlock: 12969305
+      startBlock: 42847380
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -71,6 +71,10 @@ dataSources:
       abis:
         - name: Voter
           file: ./abis/Voter.json
+        - name: Gauge
+          file: ./abis/Gauge.json
+        - name: VotingReward
+          file: ./abis/VotingReward.json
       eventHandlers:
         - event: GaugeCreated(indexed address,indexed address,indexed
             address,address,address,address,address,address)
@@ -85,11 +89,11 @@ dataSources:
       file: ./src/handlers/voting/Voter.ts
   - kind: ethereum
     name: VotingEscrow
-    network: liteforge
+    network: arc-testnet
     source:
       abi: VotingEscrow
       address: "0xF1B1c2f4E8FcD4aFCA0E608B1c7dB8b4e700154F"
-      startBlock: 12969305
+      startBlock: 42847380
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -129,10 +133,10 @@ dataSources:
       file: ./src/handlers/voting/VotingEscrow.ts
   - kind: ethereum
     name: NonfungiblePositionManager
-    network: liteforge
+    network: arc-testnet
     source:
       abi: NonfungiblePositionManager
-      address: "0x842CDC95B8BC3A19a8fFc91f200e51c8aF6faFC6"
+      address: "0x8948f9d59203F9dCF4de4B2baa10887993274C3C"
       startBlock: 42847380
     mapping:
       kind: ethereum/events
@@ -155,7 +159,7 @@ dataSources:
 templates:
   - name: Pool
     kind: ethereum
-    network: liteforge
+    network: arc-testnet
     source:
       abi: V2Pool
     mapping:
@@ -187,7 +191,7 @@ templates:
       file: ./src/handlers/core/V2Pools.ts
   - name: CLPool
     kind: ethereum
-    network: liteforge
+    network: arc-testnet
     source:
       abi: CLPool
     mapping:
@@ -214,7 +218,7 @@ templates:
       file: ./src/handlers/core/CLPools.ts
   - name: Gauge
     kind: ethereum
-    network: liteforge
+    network: arc-testnet
     source:
       abi: Gauge
     mapping:
@@ -226,6 +230,8 @@ templates:
       abis:
         - name: Gauge
           file: ./abis/Gauge.json
+        - name: Oracle
+          file: ./abis/Oracle.json
       eventHandlers:
         - event: Withdraw(indexed address,uint256)
           handler: handleWithdraw
@@ -238,7 +244,7 @@ templates:
       file: ./src/handlers/staking/Gauge.ts
   - name: CLGauge
     kind: ethereum
-    network: liteforge
+    network: arc-testnet
     source:
       abi: CLGauge
     mapping:
@@ -250,6 +256,8 @@ templates:
       abis:
         - name: CLGauge
           file: ./abis/CLGauge.json
+        - name: Oracle
+          file: ./abis/Oracle.json
       eventHandlers:
         - event: Withdraw(indexed address,indexed uint256,indexed uint128)
           handler: handleWithdraw
@@ -262,7 +270,7 @@ templates:
       file: ./src/handlers/staking/CLGauge.ts
   - name: VotingReward
     kind: ethereum
-    network: liteforge
+    network: arc-testnet
     source:
       abi: VotingReward
     mapping:
@@ -274,6 +282,8 @@ templates:
       abis:
         - name: VotingReward
           file: ./abis/VotingReward.json
+        - name: Oracle
+          file: ./abis/Oracle.json
       eventHandlers:
         - event: NotifyReward(indexed address,indexed address,indexed uint256,uint256)
           handler: handleNotifyReward

@@ -56,7 +56,7 @@ export function handleDeposit(event: DepositEvent): void {
     const lock = LockPosition.load(tokenId.toString()) as LockPosition;
     const amount = divideByBase(event.params.value);
     lock.position = lock.position.plus(amount);
-    lock.unlockTime = lock.unlockTime;
+    lock.unlockTime = event.params.locktime;
     lock.save();
 }
 
@@ -69,7 +69,6 @@ export function handleWithdraw(event: WithdrawEvent): void {
     const lock = LockPosition.load(tokenId.toString()) as LockPosition;
     const amount = divideByBase(event.params.value);
     lock.position = lock.position.minus(amount);
-    lock.unlockTime = lock.unlockTime;
     lock.save();
 }
 
