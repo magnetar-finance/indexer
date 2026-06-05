@@ -230,6 +230,8 @@ templates:
       abis:
         - name: Gauge
           file: ./abis/Gauge.json
+        - name: Oracle
+          file: ./abis/Oracle.json
       eventHandlers:
         - event: Withdraw(indexed address,uint256)
           handler: handleWithdraw
@@ -254,6 +256,8 @@ templates:
       abis:
         - name: CLGauge
           file: ./abis/CLGauge.json
+        - name: Oracle
+          file: ./abis/Oracle.json
       eventHandlers:
         - event: Withdraw(indexed address,indexed uint256,indexed uint128)
           handler: handleWithdraw
@@ -278,6 +282,8 @@ templates:
       abis:
         - name: VotingReward
           file: ./abis/VotingReward.json
+        - name: Oracle
+          file: ./abis/Oracle.json
       eventHandlers:
         - event: NotifyReward(indexed address,indexed address,indexed uint256,uint256)
           handler: handleNotifyReward

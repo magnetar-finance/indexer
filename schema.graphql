@@ -302,3 +302,10 @@ type VotingRewards @entity {
     gauge: Gauge! @index
     votingRewardsType: VotingRewardsType!
 }
+
+type NotifyReward @entity {
+    id: ID!
+    votingRewards: VotingRewards!
+    token: Token!
+    amount: BigDecimal!
+}

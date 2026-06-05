@@ -1,6 +1,6 @@
 import { log } from 'matchstick-as';
 import { ERC20 } from '../../../generated/CLFactory/ERC20';
-import { Gauge, Pool, Statistics, Token, VotingRewards } from '../../../generated/schema';
+import { Gauge, NotifyReward, Pool, Statistics, Token, VotingRewards } from '../../../generated/schema';
 import {
     NotifyReward as NotifyRewardEvent,
     ClaimRewards as ClaimRewardsEvent,
@@ -98,6 +98,19 @@ export function handleNotifyReward(event: NotifyRewardEvent): void {
         pool.totalBribesUSD = pool.totalBribesUSD.plus(amountUSD);
         statistics.totalBribesUSD = statistics.totalBribesUSD.plus(amountUSD);
     }
+
+    const notifyRewardId = `${votingReward.id}-${token.id}`;
+    let notifyReward = NotifyReward.load(notifyRewardId);
+
+    if (notifyReward == null) {
+        notifyReward = new NotifyReward(notifyRewardId);
+        notifyReward.amount = BD_ZERO;
+        notifyReward.votingRewards = votingReward.id;
+        notifyReward.token = token.id;
+    }
+
+    notifyReward.amount = notifyReward.amount.plus(amount);
+    notifyReward.save();
 
     pool.save();
     gauge.save();
