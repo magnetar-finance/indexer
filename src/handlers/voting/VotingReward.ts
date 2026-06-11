@@ -1,4 +1,4 @@
-import { log } from 'matchstick-as';
+import { log } from '@graphprotocol/graph-ts';
 import { ERC20 } from '../../../generated/CLFactory/ERC20';
 import { Gauge, NotifyReward, Pool, Statistics, Token, VotingRewards } from '../../../generated/schema';
 import {
@@ -45,6 +45,8 @@ export function handleNotifyReward(event: NotifyRewardEvent): void {
         token.tradeVolume = BD_ZERO;
         token.tradeVolumeUSD = BD_ZERO;
         token.txCount = BI_ZERO;
+
+        log.debug('[auto] saving entity: {}', ['token']);
 
         token.save();
     }
@@ -110,10 +112,15 @@ export function handleNotifyReward(event: NotifyRewardEvent): void {
     }
 
     notifyReward.amount = notifyReward.amount.plus(amount);
+    log.debug('[auto] saving entity: {}', ['notifyReward']);
     notifyReward.save();
 
+    log.debug('[auto] saving entity: {}', ['pool']);
+
     pool.save();
+    log.debug('[auto] saving entity: {}', ['gauge']);
     gauge.save();
+    log.debug('[auto] saving entity: {}', ['statistics']);
     statistics.save();
 }
 
@@ -166,7 +173,11 @@ export function handleClaimRewards(event: ClaimRewardsEvent): void {
         statistics.totalBribesUSD = statistics.totalBribesUSD.minus(amountUSD);
     }
 
+    log.debug('[auto] saving entity: {}', ['pool']);
+
     pool.save();
+    log.debug('[auto] saving entity: {}', ['gauge']);
     gauge.save();
+    log.debug('[auto] saving entity: {}', ['statistics']);
     statistics.save();
 }

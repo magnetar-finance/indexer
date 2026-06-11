@@ -1,5 +1,5 @@
 import { Address } from '@graphprotocol/graph-ts';
-import { log } from 'matchstick-as';
+import { log } from '@graphprotocol/graph-ts';
 import { PoolCreated as V2PoolCreatedEvent } from '../../../generated/PoolFactory/PoolFactory';
 import { Bundle, Pool, Statistics, Token } from '../../../generated/schema';
 import { Pool as PoolTemplate } from '../../../generated/templates';
@@ -47,11 +47,6 @@ export function handlePoolCreated(event: V2PoolCreatedEvent): void {
             return;
         }
 
-        if (symbol.reverted || decimals.reverted || name.reverted) {
-            log.warning('[V2PoolFactory] Could not fetch token0 details for {} (duplicate check)', [token0Id]);
-            return;
-        }
-
         token0.address = Address.fromString(token0Id);
         token0.derivedETH = BD_ZERO;
         token0.derivedUSD = BD_ZERO;
@@ -64,6 +59,8 @@ export function handlePoolCreated(event: V2PoolCreatedEvent): void {
         token0.tradeVolume = BD_ZERO;
         token0.tradeVolumeUSD = BD_ZERO;
         token0.txCount = BI_ZERO;
+
+        log.debug('[auto] saving entity: {}', ['token0']);
 
         token0.save();
     }
@@ -94,6 +91,8 @@ export function handlePoolCreated(event: V2PoolCreatedEvent): void {
         token1.tradeVolume = BD_ZERO;
         token1.tradeVolumeUSD = BD_ZERO;
         token1.txCount = BI_ZERO;
+
+        log.debug('[auto] saving entity: {}', ['token1']);
 
         token1.save();
     }
@@ -146,8 +145,12 @@ export function handlePoolCreated(event: V2PoolCreatedEvent): void {
 
     statistics.totalPairsCreated = statistics.totalPairsCreated.plus(BI_ONE);
 
+    log.debug('[auto] saving entity: {}', ['pool']);
+
     pool.save();
+    log.debug('[auto] saving entity: {}', ['statistics']);
     statistics.save();
+    log.debug('[auto] saving entity: {}', ['bundle']);
     bundle.save();
 
     PoolTemplate.create(event.params.pool);

@@ -13,7 +13,7 @@ import {
 import { LockPosition, User } from '../../../generated/schema';
 import { BD_ZERO, BI_ZERO, LOCK_MAX_TIME, WEEK, ZERO_ADDRESS } from '../../utils/constants';
 import { divideByBase } from '../../utils/math';
-import { log } from 'matchstick-as';
+import { log } from '@graphprotocol/graph-ts';
 
 export function handleTransfer(event: TransferEvent): void {
     const recipient = event.params.to;
@@ -25,6 +25,7 @@ export function handleTransfer(event: TransferEvent): void {
     if (user == null) {
         user = new User(recipient.toHex());
         user.address = recipient;
+        log.debug('[auto] saving entity: {}', ['user']);
         user.save();
     }
 
@@ -44,6 +45,7 @@ export function handleTransfer(event: TransferEvent): void {
     }
 
     lock.owner = user.id;
+    log.debug('[auto] saving entity: {}', ['lock']);
     lock.save();
 }
 
@@ -57,6 +59,7 @@ export function handleDeposit(event: DepositEvent): void {
     const amount = divideByBase(event.params.value);
     lock.position = lock.position.plus(amount);
     lock.unlockTime = event.params.locktime;
+    log.debug('[auto] saving entity: {}', ['lock']);
     lock.save();
 }
 
@@ -69,6 +72,7 @@ export function handleWithdraw(event: WithdrawEvent): void {
     const lock = LockPosition.load(tokenId.toString()) as LockPosition;
     const amount = divideByBase(event.params.value);
     lock.position = lock.position.minus(amount);
+    log.debug('[auto] saving entity: {}', ['lock']);
     lock.save();
 }
 
@@ -85,7 +89,9 @@ export function handleDepositManaged(event: DepositManagedEvent): void {
     const amount = divideByBase(event.params._weight);
     lock.position = lock.position.minus(amount);
     mLock.position = mLock.position.plus(amount);
+    log.debug('[auto] saving entity: {}', ['lock']);
     lock.save();
+    log.debug('[auto] saving entity: {}', ['mLock']);
     mLock.save();
 }
 
@@ -96,6 +102,7 @@ export function handleCreateManaged(event: CreateManagedEvent): void {
     lock.freeRewardManager = event.params._freeManagedReward;
     lock.lockRewardManager = event.params._lockedManagedReward;
     lock.lockType = 'MANAGED';
+    log.debug('[auto] saving entity: {}', ['lock']);
     lock.save();
 }
 
@@ -111,10 +118,12 @@ export function handleWithdrawManaged(event: WithdrawManagedEvent): void {
     const mLock = LockPosition.load(mLockId.toString()) as LockPosition;
     const amount = divideByBase(event.params._weight);
     lock.position = amount;
+    log.debug('[auto] saving entity: {}', ['lock']);
     lock.save();
 
     if (amount.lt(mLock.position)) {
         mLock.position = amount;
+        log.debug('[auto] saving entity: {}', ['mLock']);
         mLock.save();
     }
 }
@@ -129,8 +138,10 @@ export function handleMerge(event: MergeEvent): void {
     const amountTo = divideByBase(event.params._amountTo);
     const amountTotal = amountFrom.plus(amountTo);
     fromLock.position = fromLock.position.minus(amountFrom);
+    log.debug('[auto] saving entity: {}', ['fromLock']);
     fromLock.save();
     toLock.position = amountTotal;
+    log.debug('[auto] saving entity: {}', ['toLock']);
     toLock.save();
 }
 
@@ -151,14 +162,17 @@ export function handleSplit(event: SplitEvent): void {
     fromLock.permanent = false;
     fromLock.position = BD_ZERO;
     fromLock.unlockTime = BI_ZERO;
+    log.debug('[auto] saving entity: {}', ['fromLock']);
     fromLock.save();
 
     lock1.position = amount1;
     lock1.unlockTime = event.params._locktime;
+    log.debug('[auto] saving entity: {}', ['lock1']);
     lock1.save();
 
     lock2.position = amount2;
     lock2.unlockTime = event.params._locktime;
+    log.debug('[auto] saving entity: {}', ['lock2']);
     lock2.save();
 }
 
@@ -168,6 +182,7 @@ export function handleLockPermanent(event: LockPermanentEvent): void {
     const lock = LockPosition.load(lockId.toString()) as LockPosition;
     lock.permanent = true;
     lock.unlockTime = BI_ZERO;
+    log.debug('[auto] saving entity: {}', ['lock']);
     lock.save();
 }
 
@@ -177,5 +192,6 @@ export function handleUnlockPermanent(event: UnlockPermanentEvent): void {
     const lock = LockPosition.load(lockId.toString()) as LockPosition;
     lock.permanent = false;
     lock.unlockTime = event.params._ts.plus(LOCK_MAX_TIME).div(WEEK).times(WEEK);
+    log.debug('[auto] saving entity: {}', ['lock']);
     lock.save();
 }

@@ -20,6 +20,12 @@ enum VotingRewardsType {
     BRIBE
 }
 
+enum RentalStatus {
+    AVAILABLE
+    EXPIRED
+    RENTED_OUT
+}
+
 type Statistics @entity {
     id: ID!
     txCount: BigInt!
@@ -308,4 +314,18 @@ type NotifyReward @entity {
     votingRewards: VotingRewards!
     token: Token!
     amount: BigDecimal!
+}
+
+type Rental @entity {
+    id: ID!
+    address: Bytes!
+    escrow: Bytes!
+    paymentToken: Token!
+    price: BigDecimal!
+    runsUntil: BigInt!
+    seller: User!
+    buyer: User
+    reaped: Boolean!
+    status: RentalStatus!
+    lock: LockPosition!
 }

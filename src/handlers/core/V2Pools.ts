@@ -1,4 +1,4 @@
-import { log } from 'matchstick-as';
+import { log } from '@graphprotocol/graph-ts';
 import { ERC20 } from '../../../generated/PoolFactory/ERC20';
 import { Burn, Mint, Pool, Statistics, Swap, Token, Transaction } from '../../../generated/schema';
 import {
@@ -49,16 +49,19 @@ export function handleSwap(event: SwapEvent): void {
     pool.volumeToken0 = pool.volumeToken0.plus(amount0Total);
     pool.volumeToken1 = pool.volumeToken1.plus(amount1Total);
     pool.txCount = pool.txCount.plus(BI_ONE);
+    log.debug('[auto] saving entity: {}', ['pool']);
     pool.save();
 
     token0.tradeVolume = token0.tradeVolume.plus(amount0Total);
     token0.tradeVolumeUSD = token0.tradeVolumeUSD.plus(amount0USD);
     token0.txCount = token0.txCount.plus(BI_ONE);
+    log.debug('[auto] saving entity: {}', ['token0']);
     token0.save();
 
     token1.tradeVolume = token1.tradeVolume.plus(amount1Total);
     token1.tradeVolumeUSD = token1.tradeVolumeUSD.plus(amount1USD);
     token1.txCount = token1.txCount.plus(BI_ONE);
+    log.debug('[auto] saving entity: {}', ['token1']);
     token1.save();
 
     // Transaction
@@ -70,6 +73,7 @@ export function handleSwap(event: SwapEvent): void {
         transaction.block = event.block.number;
         transaction.timestamp = event.block.timestamp;
         transaction.hash = event.transaction.hash;
+        log.debug('[auto] saving entity: {}', ['transaction']);
         transaction.save();
     }
 
@@ -87,6 +91,7 @@ export function handleSwap(event: SwapEvent): void {
     swap.amount1Out = amount1Out;
     swap.amountUSD = amount0USD.plus(amount1USD);
     swap.logIndex = event.logIndex;
+    log.debug('[auto] saving entity: {}', ['swap']);
     swap.save();
 
     // Statistics
@@ -94,6 +99,7 @@ export function handleSwap(event: SwapEvent): void {
     statistics.totalTradeVolumeUSD = statistics.totalTradeVolumeUSD.plus(amount0USD).plus(amount1USD);
     statistics.totalTradeVolumeETH = statistics.totalTradeVolumeETH.plus(amount0ETH).plus(amount1ETH);
     statistics.txCount = statistics.txCount.plus(BI_ONE);
+    log.debug('[auto] saving entity: {}', ['statistics']);
     statistics.save();
 
     const overallDayData = updateOverallDayData(event);
@@ -105,28 +111,33 @@ export function handleSwap(event: SwapEvent): void {
     overallDayData.feesUSD = overallDayData.feesUSD.plus(pool.totalFeesUSD);
     overallDayData.volumeETH = overallDayData.volumeETH.plus(amount0ETH).plus(amount1ETH);
     overallDayData.volumeUSD = overallDayData.volumeUSD.plus(amount0USD).plus(amount1USD);
+    log.debug('[auto] saving entity: {}', ['overallDayData']);
     overallDayData.save();
 
     poolDayData.dailyVolumeToken0 = poolDayData.dailyVolumeToken0.plus(amount0Total);
     poolDayData.dailyVolumeToken1 = poolDayData.dailyVolumeToken1.plus(amount1Total);
     poolDayData.dailyVolumeETH = poolDayData.dailyVolumeETH.plus(amount0ETH).plus(amount1ETH);
     poolDayData.dailyVolumeUSD = poolDayData.dailyVolumeUSD.plus(amount0USD).plus(amount1USD);
+    log.debug('[auto] saving entity: {}', ['poolDayData']);
     poolDayData.save();
 
     poolHourData.hourlyVolumeToken0 = poolHourData.hourlyVolumeToken0.plus(amount0Total);
     poolHourData.hourlyVolumeToken1 = poolHourData.hourlyVolumeToken1.plus(amount1Total);
     poolHourData.hourlyVolumeETH = poolHourData.hourlyVolumeETH.plus(amount0ETH).plus(amount1ETH);
     poolHourData.hourlyVolumeUSD = poolHourData.hourlyVolumeUSD.plus(amount0USD).plus(amount1USD);
+    log.debug('[auto] saving entity: {}', ['poolHourData']);
     poolHourData.save();
 
     token0DayData.dailyVolumeToken = token0DayData.dailyVolumeToken.plus(amount0Total);
     token0DayData.dailyVolumeUSD = token0DayData.dailyVolumeUSD.plus(amount0USD);
     token0DayData.dailyVolumeETH = token0DayData.dailyVolumeETH.plus(amount0ETH);
+    log.debug('[auto] saving entity: {}', ['token0DayData']);
     token0DayData.save();
 
     token1DayData.dailyVolumeToken = token1DayData.dailyVolumeToken.plus(amount1Total);
     token1DayData.dailyVolumeUSD = token1DayData.dailyVolumeUSD.plus(amount1USD);
     token1DayData.dailyVolumeETH = token1DayData.dailyVolumeETH.plus(amount1ETH);
+    log.debug('[auto] saving entity: {}', ['token1DayData']);
     token1DayData.save();
 }
 
@@ -151,17 +162,21 @@ export function handleMint(event: MintEvent): void {
     const amount1ETH = amount1.times(token1.derivedETH);
 
     token0.txCount = token0.txCount.plus(BI_ONE);
+    log.debug('[auto] saving entity: {}', ['token0']);
     token0.save();
 
     token1.txCount = token1.txCount.plus(BI_ONE);
+    log.debug('[auto] saving entity: {}', ['token1']);
     token1.save();
 
     // Statistics
     const statistics = Statistics.load('1') as Statistics;
     statistics.txCount = statistics.txCount.plus(BI_ONE);
+    log.debug('[auto] saving entity: {}', ['statistics']);
     statistics.save();
 
     pool.txCount = pool.txCount.plus(BI_ONE);
+    log.debug('[auto] saving entity: {}', ['pool']);
     pool.save();
 
     // Transaction
@@ -173,6 +188,7 @@ export function handleMint(event: MintEvent): void {
         transaction.block = event.block.number;
         transaction.timestamp = event.block.timestamp;
         transaction.hash = event.transaction.hash;
+        log.debug('[auto] saving entity: {}', ['transaction']);
         transaction.save();
     }
 
@@ -183,6 +199,7 @@ export function handleMint(event: MintEvent): void {
     mint.amountUSD = amount0USD.plus(amount1USD);
     mint.sender = event.params.sender;
     mint.logIndex = event.logIndex;
+    log.debug('[auto] saving entity: {}', ['mint']);
     mint.save();
 
     const overallDayData = updateOverallDayData(event);
@@ -194,28 +211,33 @@ export function handleMint(event: MintEvent): void {
     overallDayData.feesUSD = overallDayData.feesUSD.plus(pool.totalFeesUSD);
     overallDayData.volumeETH = overallDayData.volumeETH.plus(amount0ETH).plus(amount1ETH);
     overallDayData.volumeUSD = overallDayData.volumeUSD.plus(amount0USD).plus(amount1USD);
+    log.debug('[auto] saving entity: {}', ['overallDayData']);
     overallDayData.save();
 
     poolDayData.dailyVolumeToken0 = poolDayData.dailyVolumeToken0.plus(amount0);
     poolDayData.dailyVolumeToken1 = poolDayData.dailyVolumeToken1.plus(amount1);
     poolDayData.dailyVolumeETH = poolDayData.dailyVolumeETH.plus(amount0ETH).plus(amount1ETH);
     poolDayData.dailyVolumeUSD = poolDayData.dailyVolumeUSD.plus(amount0USD).plus(amount1USD);
+    log.debug('[auto] saving entity: {}', ['poolDayData']);
     poolDayData.save();
 
     poolHourData.hourlyVolumeToken0 = poolHourData.hourlyVolumeToken0.plus(amount0);
     poolHourData.hourlyVolumeToken1 = poolHourData.hourlyVolumeToken1.plus(amount1);
     poolHourData.hourlyVolumeETH = poolHourData.hourlyVolumeETH.plus(amount0ETH).plus(amount1ETH);
     poolHourData.hourlyVolumeUSD = poolHourData.hourlyVolumeUSD.plus(amount0USD).plus(amount1USD);
+    log.debug('[auto] saving entity: {}', ['poolHourData']);
     poolHourData.save();
 
     token0DayData.dailyVolumeToken = token0DayData.dailyVolumeToken.plus(amount0);
     token0DayData.dailyVolumeUSD = token0DayData.dailyVolumeUSD.plus(amount0USD);
     token0DayData.dailyVolumeETH = token0DayData.dailyVolumeETH.plus(amount0ETH);
+    log.debug('[auto] saving entity: {}', ['token0DayData']);
     token0DayData.save();
 
     token1DayData.dailyVolumeToken = token1DayData.dailyVolumeToken.plus(amount1);
     token1DayData.dailyVolumeUSD = token1DayData.dailyVolumeUSD.plus(amount1USD);
     token1DayData.dailyVolumeETH = token1DayData.dailyVolumeETH.plus(amount1ETH);
+    log.debug('[auto] saving entity: {}', ['token1DayData']);
     token1DayData.save();
 }
 
@@ -268,9 +290,14 @@ export function handleSync(event: SyncEvent): void {
     token1.totalLiquidityETH = token1.totalLiquidity.times(token1.derivedETH);
     token1.totalLiquidityUSD = token1.totalLiquidity.times(token1.derivedUSD);
 
+    log.debug('[auto] saving entity: {}', ['pool']);
+
     pool.save();
+    log.debug('[auto] saving entity: {}', ['statistics']);
     statistics.save();
+    log.debug('[auto] saving entity: {}', ['token0']);
     token0.save();
+    log.debug('[auto] saving entity: {}', ['token1']);
     token1.save();
 }
 
@@ -296,9 +323,14 @@ export function handleBurn(event: BurnEvent): void {
     statistics.txCount = statistics.txCount.plus(BI_ONE);
     pool.txCount = pool.txCount.plus(BI_ONE);
 
+    log.debug('[auto] saving entity: {}', ['token0']);
+
     token0.save();
+    log.debug('[auto] saving entity: {}', ['token1']);
     token1.save();
+    log.debug('[auto] saving entity: {}', ['pool']);
     pool.save();
+    log.debug('[auto] saving entity: {}', ['statistics']);
     statistics.save();
 
     // Transaction
@@ -310,6 +342,7 @@ export function handleBurn(event: BurnEvent): void {
         transaction.block = event.block.number;
         transaction.timestamp = event.block.timestamp;
         transaction.hash = event.transaction.hash;
+        log.debug('[auto] saving entity: {}', ['transaction']);
         transaction.save();
     }
 
@@ -320,6 +353,7 @@ export function handleBurn(event: BurnEvent): void {
     burn.amount1 = token1Amount;
     burn.amountUSD = amountTotalUSD;
     burn.sender = event.params.sender;
+    log.debug('[auto] saving entity: {}', ['burn']);
     burn.save();
 
     updateOverallDayData(event);
@@ -355,9 +389,11 @@ export function handleFees(event: FeesEvent): void {
     pool.totalFees0 = pool.totalFees0.plus(amount0);
     pool.totalFees1 = pool.totalFees1.plus(amount1);
     pool.totalFeesUSD = pool.totalFeesUSD.plus(amountUSD);
+    log.debug('[auto] saving entity: {}', ['pool']);
     pool.save();
 
     statistics.totalFeesUSD = statistics.totalFeesUSD.plus(amountUSD);
+    log.debug('[auto] saving entity: {}', ['statistics']);
     statistics.save();
 }
 
@@ -383,6 +419,7 @@ export function handleTransfer(event: TransferEvent): void {
         transaction.block = event.block.number;
         transaction.timestamp = event.block.timestamp;
         transaction.hash = hash;
+        log.debug('[auto] saving entity: {}', ['transaction']);
         transaction.save();
     }
 
@@ -391,6 +428,7 @@ export function handleTransfer(event: TransferEvent): void {
 
     if (isMint) {
         pool.totalSupply = pool.totalSupply.plus(value);
+        log.debug('[auto] saving entity: {}', ['pool']);
         pool.save();
 
         const mintId = `mint-${transaction.id}`;
@@ -400,6 +438,7 @@ export function handleTransfer(event: TransferEvent): void {
         mint.pool = pool.id;
         mint.to = event.params.to;
         mint.liquidity = value;
+        log.debug('[auto] saving entity: {}', ['mint']);
         mint.save();
     }
 
@@ -413,11 +452,13 @@ export function handleTransfer(event: TransferEvent): void {
         burn.sender = event.params.from;
         burn.to = event.params.to;
         burn.needsComplete = true;
+        log.debug('[auto] saving entity: {}', ['burn']);
         burn.save();
     }
 
     if (isBurn && event.params.from.toHex() == pool.id) {
         pool.totalSupply = pool.totalSupply.minus(value);
+        log.debug('[auto] saving entity: {}', ['pool']);
         pool.save();
 
         const burnId = `burn-${transaction.id}`;
@@ -425,6 +466,7 @@ export function handleTransfer(event: TransferEvent): void {
         if (burn && burn.needsComplete) {
             burn.liquidity = value;
             burn.needsComplete = false;
+            log.debug('[auto] saving entity: {}', ['burn']);
             burn.save();
         } else {
             burn = new Burn(burnId);
@@ -435,6 +477,7 @@ export function handleTransfer(event: TransferEvent): void {
             burn.sender = event.params.from;
             burn.to = event.params.to;
             burn.needsComplete = false;
+            log.debug('[auto] saving entity: {}', ['burn']);
             burn.save();
         }
     }

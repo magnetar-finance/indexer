@@ -1,5 +1,5 @@
 import { ethereum, BigInt, Address } from '@graphprotocol/graph-ts';
-import { log } from 'matchstick-as';
+import { log } from '@graphprotocol/graph-ts';
 import {
     OverallDayData,
     PoolDayData,
@@ -37,6 +37,7 @@ export function updateOverallDayData(event: ethereum.Event): OverallDayData {
     overallDayData.totalTradeVolumeUSD = statistics.totalTradeVolumeUSD;
     overallDayData.txCount = overallDayData.txCount.plus(BI_ONE);
 
+    log.debug('[mutations] updateOverallDayData — saving dayID: {}', [dayID.toString()]);
     overallDayData.save();
 
     return overallDayData as OverallDayData;
@@ -65,6 +66,7 @@ export function updatePoolDayData(event: ethereum.Event): PoolDayData {
     poolDayData.reserveUSD = pool.reserveUSD;
     poolDayData.reserveETH = pool.reserveETH;
     poolDayData.dailyTxns = poolDayData.dailyTxns.plus(BI_ONE);
+    log.debug('[mutations] updatePoolDayData — saving dayPoolID: {}', [dayPoolID]);
     poolDayData.save();
 
     return poolDayData as PoolDayData;
@@ -93,6 +95,7 @@ export function updatePoolHourData(event: ethereum.Event): PoolHourData {
     poolHourData.reserveUSD = pool.reserveUSD;
     poolHourData.reserveETH = pool.reserveETH;
     poolHourData.hourlyTxns = poolHourData.hourlyTxns.plus(BI_ONE);
+    log.debug('[mutations] updatePoolHourData — saving hourPoolID: {}', [hourPoolID]);
     poolHourData.save();
 
     return poolHourData as PoolHourData;
@@ -120,6 +123,7 @@ export function updateTokenDayData(token: Token, event: ethereum.Event): TokenDa
     tokenDayData.totalLiquidityETH = token.totalLiquidity.times(token.derivedETH);
     tokenDayData.totalLiquidityUSD = token.totalLiquidity.times(token.derivedUSD);
     tokenDayData.dailyTxns = tokenDayData.dailyTxns.plus(BI_ONE);
+    log.debug('[mutations] updateTokenDayData — saving tokenDayID: {}', [tokenDayID]);
     tokenDayData.save();
 
     return tokenDayData as TokenDayData;
@@ -139,6 +143,7 @@ export function createLPPosition(
     if (user == null) {
         user = new User(userId);
         user.address = to;
+        log.debug('[mutations] createLPPosition — saving new User: {}', [userId]);
         user.save();
     }
 
@@ -162,6 +167,7 @@ export function createLPPosition(
     }
 
     position.position = divideByBase(amount, 18);
+    log.debug('[mutations] createLPPosition — saving position: {}', [positionId]);
     position.save();
     return position;
 }
@@ -175,6 +181,7 @@ export function createGaugePosition(event: ethereum.Event, to: Address, amount: 
     if (user == null) {
         user = new User(userId);
         user.address = to;
+        log.debug('[mutations] createGaugePosition — saving new User: {}', [userId]);
         user.save();
     }
 
@@ -192,6 +199,7 @@ export function createGaugePosition(event: ethereum.Event, to: Address, amount: 
     }
 
     position.amountDeposited = position.amountDeposited.plus(divideByBase(amount, 18));
+    log.debug('[mutations] createGaugePosition — saving position: {}', [positionId]);
     position.save();
     return position;
 }

@@ -1,0 +1,303 @@
+[
+    { "type": "constructor", "inputs": [], "stateMutability": "nonpayable" },
+    {
+        "type": "function",
+        "name": "MAX_REWARDS_COMMISSION",
+        "inputs": [],
+        "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "WEEK",
+        "inputs": [],
+        "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "buy",
+        "inputs": [],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "buyEpoch",
+        "inputs": [],
+        "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "buyer",
+        "inputs": [],
+        "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "closeOutRental",
+        "inputs": [],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "currentEpoch",
+        "inputs": [],
+        "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "currentStatus",
+        "inputs": [],
+        "outputs": [{ "name": "", "type": "uint8", "internalType": "enum IVERental.Status" }],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "escrow",
+        "inputs": [],
+        "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "expiryEpoch",
+        "inputs": [],
+        "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "factory",
+        "inputs": [],
+        "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "initialize",
+        "inputs": [
+            { "name": "_seller", "type": "address", "internalType": "address" },
+            {
+                "name": "_paymentToken",
+                "type": "address",
+                "internalType": "address"
+            },
+            { "name": "_veNFT", "type": "uint256", "internalType": "uint256" },
+            { "name": "_amount", "type": "uint256", "internalType": "uint256" },
+            { "name": "_duration", "type": "uint256", "internalType": "uint256" },
+            {
+                "name": "_rewardsCommission",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "isReaped",
+        "inputs": [],
+        "outputs": [{ "name": "", "type": "bool", "internalType": "bool" }],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "lastVoteEpoch",
+        "inputs": [],
+        "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "owner",
+        "inputs": [],
+        "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "price",
+        "inputs": [],
+        "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "reap",
+        "inputs": [],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "renounceOwnership",
+        "inputs": [],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "rewardsCommission",
+        "inputs": [],
+        "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "seller",
+        "inputs": [],
+        "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "tokenId",
+        "inputs": [],
+        "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "transferOwnership",
+        "inputs": [{ "name": "newOwner", "type": "address", "internalType": "address" }],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "vote",
+        "inputs": [
+            { "name": "pools", "type": "address[]", "internalType": "address[]" },
+            { "name": "weights", "type": "uint256[]", "internalType": "uint256[]" }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "event",
+        "name": "Initialize",
+        "inputs": [
+            {
+                "name": "seller",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "paymentToken",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "tokenId",
+                "type": "uint256",
+                "indexed": true,
+                "internalType": "uint256"
+            },
+            {
+                "name": "amount",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            },
+            {
+                "name": "duration",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            },
+            {
+                "name": "rewardsCommission",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "NewBuyer",
+        "inputs": [
+            {
+                "name": "buyer",
+                "type": "address",
+                "indexed": false,
+                "internalType": "address"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "OwnershipTransferred",
+        "inputs": [
+            {
+                "name": "previousOwner",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "newOwner",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            }
+        ],
+        "anonymous": false
+    },
+    { "type": "event", "name": "Reaped", "inputs": [], "anonymous": false },
+    {
+        "type": "event",
+        "name": "StatusChange",
+        "inputs": [
+            {
+                "name": "newStatus",
+                "type": "uint8",
+                "indexed": false,
+                "internalType": "enum IVERental.Status"
+            },
+            {
+                "name": "timestamp",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            }
+        ],
+        "anonymous": false
+    },
+    { "type": "error", "name": "AlreadyInitialized", "inputs": [] },
+    { "type": "error", "name": "AlreadyReaped", "inputs": [] },
+    { "type": "error", "name": "AmountIsZero", "inputs": [] },
+    { "type": "error", "name": "Expired", "inputs": [] },
+    { "type": "error", "name": "NotContract", "inputs": [] },
+    { "type": "error", "name": "OnlyBuyer", "inputs": [] },
+    { "type": "error", "name": "OnlyFactory", "inputs": [] },
+    {
+        "type": "error",
+        "name": "OwnableInvalidOwner",
+        "inputs": [{ "name": "owner", "type": "address", "internalType": "address" }]
+    },
+    {
+        "type": "error",
+        "name": "OwnableUnauthorizedAccount",
+        "inputs": [{ "name": "account", "type": "address", "internalType": "address" }]
+    },
+    { "type": "error", "name": "RentedOut", "inputs": [] },
+    {
+        "type": "error",
+        "name": "SafeERC20FailedOperation",
+        "inputs": [{ "name": "token", "type": "address", "internalType": "address" }]
+    },
+    { "type": "error", "name": "StillRunning", "inputs": [] },
+    { "type": "error", "name": "UnallowedOperation", "inputs": [] },
+    { "type": "error", "name": "ZeroAddress", "inputs": [] }
+]

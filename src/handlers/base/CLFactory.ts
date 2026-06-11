@@ -1,5 +1,5 @@
 import { Address, BigInt } from '@graphprotocol/graph-ts';
-import { log } from 'matchstick-as';
+import { log } from '@graphprotocol/graph-ts';
 import { PoolCreated as V3PoolCreatedEvent } from '../../../generated/CLFactory/CLFactory';
 import { Bundle, Pool, Statistics, Token } from '../../../generated/schema';
 import { ERC20 } from '../../../generated/CLFactory/ERC20';
@@ -60,6 +60,8 @@ export function handlePoolCreated(event: V3PoolCreatedEvent): void {
         token0.tradeVolumeUSD = BD_ZERO;
         token0.txCount = BI_ZERO;
 
+        log.debug('[auto] saving entity: {}', ['token0']);
+
         token0.save();
     }
 
@@ -89,6 +91,8 @@ export function handlePoolCreated(event: V3PoolCreatedEvent): void {
         token1.tradeVolume = BD_ZERO;
         token1.tradeVolumeUSD = BD_ZERO;
         token1.txCount = BI_ZERO;
+
+        log.debug('[auto] saving entity: {}', ['token1']);
 
         token1.save();
     }
@@ -129,8 +133,12 @@ export function handlePoolCreated(event: V3PoolCreatedEvent): void {
 
     statistics.totalPairsCreated = statistics.totalPairsCreated.plus(BI_ONE);
 
+    log.debug('[auto] saving entity: {}', ['pool']);
+
     pool.save();
+    log.debug('[auto] saving entity: {}', ['statistics']);
     statistics.save();
+    log.debug('[auto] saving entity: {}', ['bundle']);
     bundle.save();
 
     CLPoolTemplate.create(event.params.pool);
