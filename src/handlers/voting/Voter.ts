@@ -1,5 +1,5 @@
 import { Address } from '@graphprotocol/graph-ts';
-import { log } from 'matchstick-as';
+import { log } from '@graphprotocol/graph-ts';
 import {
     GaugeCreated as GaugeCreatedEvent,
     GaugeKilled as GaugeKilledEvent,
@@ -60,6 +60,8 @@ export function handleGaugeCreated(event: GaugeCreatedEvent): void {
         rewardToken.tradeVolumeUSD = BD_ZERO;
         rewardToken.txCount = BI_ZERO;
 
+        log.debug('[auto] saving entity: {}', ['rewardToken']);
+
         rewardToken.save();
     }
 
@@ -76,9 +78,12 @@ export function handleGaugeCreated(event: GaugeCreatedEvent): void {
     gauge.rewardToken = rewardToken.id;
     gauge.totalSupply = BD_ZERO;
 
+    log.debug('[auto] saving entity: {}', ['gauge']);
+
     gauge.save();
 
     pool.gauge = gauge.id;
+    log.debug('[auto] saving entity: {}', ['pool']);
     pool.save();
 
     if (pool.poolType == 'CONCENTRATED') {
@@ -92,11 +97,13 @@ export function handleGaugeCreated(event: GaugeCreatedEvent): void {
     const feeVotingReward = new VotingRewards(gauge.feeVotingReward.toHex());
     feeVotingReward.votingRewardsType = 'FEE';
     feeVotingReward.gauge = gauge.id;
+    log.debug('[auto] saving entity: {}', ['feeVotingReward']);
     feeVotingReward.save();
 
     const bribeVotingReward = new VotingRewards(gauge.bribeVotingReward.toHex());
     bribeVotingReward.votingRewardsType = 'BRIBE';
     bribeVotingReward.gauge = gauge.id;
+    log.debug('[auto] saving entity: {}', ['bribeVotingReward']);
     bribeVotingReward.save();
 
     VotingRewardTemplate.create(Address.fromBytes(gauge.feeVotingReward));
@@ -107,8 +114,12 @@ export function handleGaugeKilled(event: GaugeKilledEvent): void {
     const gaugeId = event.params.gauge.toHex();
     log.info('[Voter] handleGaugeKilled — gauge: {}', [gaugeId]);
     const gauge = Gauge.load(gaugeId);
-    if (gauge == null) return;
+    if (gauge == null) {
+        log.warning('[auto] early return: {} is null', ['gauge']);
+        return;
+    }
     gauge.isAlive = false;
+    log.debug('[auto] saving entity: {}', ['gauge']);
     gauge.save();
 }
 
@@ -116,8 +127,12 @@ export function handleGaugeRevived(event: GaugeRevivedEvent): void {
     const gaugeId = event.params.gauge.toHex();
     log.info('[Voter] handleGaugeRevived — gauge: {}', [gaugeId]);
     const gauge = Gauge.load(gaugeId);
-    if (gauge == null) return;
+    if (gauge == null) {
+        log.warning('[auto] early return: {} is null', ['gauge']);
+        return;
+    }
     gauge.isAlive = true;
+    log.debug('[auto] saving entity: {}', ['gauge']);
     gauge.save();
 }
 
@@ -132,7 +147,9 @@ export function handleVoted(event: VotedEvent): void {
     const weight = divideByBase(event.params.weight);
     pool.totalVotes = pool.totalVotes.plus(weight);
     lock.totalVoteWeightGiven = lock.totalVoteWeightGiven.plus(weight);
+    log.debug('[auto] saving entity: {}', ['pool']);
     pool.save();
+    log.debug('[auto] saving entity: {}', ['lock']);
     lock.save();
 
     const voteId = `vote-${lock.id}-${pool.id}`;
@@ -146,5 +163,6 @@ export function handleVoted(event: VotedEvent): void {
     }
 
     vote.weight = vote.weight.plus(weight);
+    log.debug('[auto] saving entity: {}', ['vote']);
     vote.save();
 }

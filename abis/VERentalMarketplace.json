@@ -1,0 +1,222 @@
+[
+    {
+        "type": "constructor",
+        "inputs": [
+            { "name": "_rentalImpl", "type": "address", "internalType": "address" },
+            { "name": "_ve", "type": "address", "internalType": "address" }
+        ],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "allRentals",
+        "inputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+        "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "createRental",
+        "inputs": [
+            { "name": "tokenId", "type": "uint256", "internalType": "uint256" },
+            {
+                "name": "paymentToken",
+                "type": "address",
+                "internalType": "address"
+            },
+            { "name": "price", "type": "uint256", "internalType": "uint256" },
+            { "name": "duration", "type": "uint256", "internalType": "uint256" },
+            {
+                "name": "rewardsCommission",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [{ "name": "rental", "type": "address", "internalType": "address" }],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "createRentals",
+        "inputs": [
+            {
+                "name": "tokenIds",
+                "type": "uint256[]",
+                "internalType": "uint256[]"
+            },
+            {
+                "name": "paymentTokens",
+                "type": "address[]",
+                "internalType": "address[]"
+            },
+            { "name": "prices", "type": "uint256[]", "internalType": "uint256[]" },
+            {
+                "name": "durations",
+                "type": "uint256[]",
+                "internalType": "uint256[]"
+            },
+            {
+                "name": "rewardsCommissions",
+                "type": "uint256[]",
+                "internalType": "uint256[]"
+            }
+        ],
+        "outputs": [{ "name": "rentals", "type": "address[]", "internalType": "address[]" }],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "getAllRentals",
+        "inputs": [],
+        "outputs": [{ "name": "", "type": "address[]", "internalType": "address[]" }],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "nonce",
+        "inputs": [],
+        "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "owner",
+        "inputs": [],
+        "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "renounceOwnership",
+        "inputs": [],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "rentalImpl",
+        "inputs": [],
+        "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "transferOwnership",
+        "inputs": [{ "name": "newOwner", "type": "address", "internalType": "address" }],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "ve",
+        "inputs": [],
+        "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "withdrawAsset",
+        "inputs": [
+            { "name": "asset", "type": "address", "internalType": "address" },
+            { "name": "to", "type": "address", "internalType": "address" },
+            { "name": "amount", "type": "uint256", "internalType": "uint256" }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "event",
+        "name": "NewRental",
+        "inputs": [
+            {
+                "name": "rental",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "escrow",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "tokenId",
+                "type": "uint256",
+                "indexed": true,
+                "internalType": "uint256"
+            },
+            {
+                "name": "paymentToken",
+                "type": "address",
+                "indexed": false,
+                "internalType": "address"
+            },
+            {
+                "name": "price",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            },
+            {
+                "name": "duration",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            },
+            {
+                "name": "commission",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "OwnershipTransferred",
+        "inputs": [
+            {
+                "name": "previousOwner",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            },
+            {
+                "name": "newOwner",
+                "type": "address",
+                "indexed": true,
+                "internalType": "address"
+            }
+        ],
+        "anonymous": false
+    },
+    { "type": "error", "name": "AmountIsZero", "inputs": [] },
+    { "type": "error", "name": "FailedDeployment", "inputs": [] },
+    {
+        "type": "error",
+        "name": "InsufficientBalance",
+        "inputs": [
+            { "name": "balance", "type": "uint256", "internalType": "uint256" },
+            { "name": "needed", "type": "uint256", "internalType": "uint256" }
+        ]
+    },
+    { "type": "error", "name": "NotContract", "inputs": [] },
+    {
+        "type": "error",
+        "name": "OwnableInvalidOwner",
+        "inputs": [{ "name": "owner", "type": "address", "internalType": "address" }]
+    },
+    {
+        "type": "error",
+        "name": "OwnableUnauthorizedAccount",
+        "inputs": [{ "name": "account", "type": "address", "internalType": "address" }]
+    },
+    {
+        "type": "error",
+        "name": "SafeERC20FailedOperation",
+        "inputs": [{ "name": "token", "type": "address", "internalType": "address" }]
+    },
+    { "type": "error", "name": "ZeroAddress", "inputs": [] }
+]

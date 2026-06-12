@@ -41,6 +41,10 @@
         "NonfungiblePositionManager": {
             "address": "0x8948f9d59203F9dCF4de4B2baa10887993274C3C",
             "startBlock": 42847380
+        },
+        "VERentalMarketplace": {
+            "address": "0xd806d049714a70116e087ad6d2433df7437c47af",
+            "startBlock": 46636122
         }
     },
     "liteforge": {
@@ -63,6 +67,10 @@
         "NonfungiblePositionManager": {
             "address": "0x842CDC95B8BC3A19a8fFc91f200e51c8aF6faFC6",
             "startBlock": 12969304
+        },
+        "VERentalMarketplace": {
+            "address": "0x38fd3f88a46239d8cecb768f8e7620d861d2de13",
+            "startBlock": 18211244
         }
     }
 }

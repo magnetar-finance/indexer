@@ -7,7 +7,7 @@ import {
 } from '../../../generated/NonfungiblePositionManager/NonfungiblePositionManager';
 import { CLPosition, LiquidityPosition, User } from '../../../generated/schema';
 import { getItemFromStorage, nullifyItem, setItemInStorage } from '../../utils/storage';
-import { log } from 'matchstick-as';
+import { log } from '@graphprotocol/graph-ts';
 
 export function handleTransfer(event: TransferEvent): void {
     const sender = event.params.from;
@@ -27,6 +27,7 @@ export function handleTransfer(event: TransferEvent): void {
     if (user == null) {
         user = new User(recipient.toHex());
         user.address = recipient;
+        log.debug('[auto] saving entity: {}', ['user']);
         user.save();
     }
 
@@ -46,6 +47,7 @@ export function handleTransfer(event: TransferEvent): void {
         const lpId = event.address.toHex() + '-' + clPosition.pool + '-' + tokenId.toString();
         const lp = LiquidityPosition.load(lpId) as LiquidityPosition;
         lp.account = user.id;
+        log.debug('[auto] saving entity: {}', ['lp']);
         lp.save();
     }
 
@@ -55,6 +57,7 @@ export function handleTransfer(event: TransferEvent): void {
         const lp = LiquidityPosition.load(lpId) as LiquidityPosition;
         lp.account = null;
         lp.position = BD_ZERO;
+        log.debug('[auto] saving entity: {}', ['lp']);
         lp.save();
     }
 }
@@ -78,6 +81,7 @@ export function handleIncreaseLiquidity(event: IncreaseLiquidityEvent): void {
     const amount = divideByBase(event.params.liquidity);
 
     lp.position = lp.position.plus(amount);
+    log.debug('[auto] saving entity: {}', ['lp']);
     lp.save();
 }
 
@@ -93,5 +97,6 @@ export function handleDecreaseLiquidity(event: DecreaseLiquidityEvent): void {
     const amount = divideByBase(event.params.liquidity);
 
     lp.position = lp.position.minus(amount);
+    log.debug('[auto] saving entity: {}', ['lp']);
     lp.save();
 }

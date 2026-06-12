@@ -1,4 +1,4 @@
-import { log } from 'matchstick-as';
+import { log } from '@graphprotocol/graph-ts';
 import { Burn, CLPosition, Mint, Pool, Statistics, Swap, Token, Transaction } from '../../../generated/schema';
 import { Swap as SwapEvent, Mint as MintEvent, Burn as BurnEvent } from '../../../generated/templates/CLPool/CLPool';
 import { BD_ZERO, BI_ONE, BI_ZERO } from '../../utils/constants';
@@ -58,16 +58,20 @@ export function handleSwap(event: SwapEvent): void {
     if (!pool.reserve0.equals(BD_ZERO)) pool.token1Price = pool.reserve1.times(pool.reserve0);
     else pool.token1Price = BD_ZERO;
 
+    log.debug('[auto] saving entity: {}', ['pool']);
+
     pool.save();
 
     token0.tradeVolume = token0.tradeVolume.plus(amount0);
     token0.tradeVolumeUSD = token0.tradeVolumeUSD.plus(amount0USD);
     token0.txCount = token0.txCount.plus(BI_ONE);
+    log.debug('[auto] saving entity: {}', ['token0']);
     token0.save();
 
     token1.tradeVolume = token1.tradeVolume.plus(amount1);
     token1.tradeVolumeUSD = token1.tradeVolumeUSD.plus(amount1USD);
     token1.txCount = token1.txCount.plus(BI_ONE);
+    log.debug('[auto] saving entity: {}', ['token1']);
     token1.save();
 
     const hash = event.transaction.hash.toHex();
@@ -78,6 +82,7 @@ export function handleSwap(event: SwapEvent): void {
         transaction.block = event.block.number;
         transaction.timestamp = event.block.timestamp;
         transaction.hash = event.transaction.hash;
+        log.debug('[auto] saving entity: {}', ['transaction']);
         transaction.save();
     }
 
@@ -95,6 +100,7 @@ export function handleSwap(event: SwapEvent): void {
     swap.amount1Out = amount1Out;
     swap.amountUSD = amount0USD.plus(amount1USD);
     swap.logIndex = event.logIndex;
+    log.debug('[auto] saving entity: {}', ['swap']);
     swap.save();
     log.debug('[CLPool] Swap saved — id: {}, amountUSD: {}', [swapId, swap.amountUSD.toString()]);
 
@@ -103,6 +109,7 @@ export function handleSwap(event: SwapEvent): void {
     statistics.totalTradeVolumeUSD = statistics.totalTradeVolumeUSD.plus(amount0USD).plus(amount1USD);
     statistics.totalTradeVolumeETH = statistics.totalTradeVolumeETH.plus(amount0ETH).plus(amount1ETH);
     statistics.txCount = statistics.txCount.plus(BI_ONE);
+    log.debug('[auto] saving entity: {}', ['statistics']);
     statistics.save();
 
     const overallDayData = updateOverallDayData(event);
@@ -114,28 +121,33 @@ export function handleSwap(event: SwapEvent): void {
     overallDayData.feesUSD = overallDayData.feesUSD.plus(pool.totalFeesUSD);
     overallDayData.volumeETH = overallDayData.volumeETH.plus(amount0ETH).plus(amount1ETH);
     overallDayData.volumeUSD = overallDayData.volumeUSD.plus(amount0USD).plus(amount1USD);
+    log.debug('[auto] saving entity: {}', ['overallDayData']);
     overallDayData.save();
 
     poolDayData.dailyVolumeToken0 = poolDayData.dailyVolumeToken0.plus(amount0);
     poolDayData.dailyVolumeToken1 = poolDayData.dailyVolumeToken1.plus(amount1);
     poolDayData.dailyVolumeETH = poolDayData.dailyVolumeETH.plus(amount0ETH).plus(amount1ETH);
     poolDayData.dailyVolumeUSD = poolDayData.dailyVolumeUSD.plus(amount0USD).plus(amount1USD);
+    log.debug('[auto] saving entity: {}', ['poolDayData']);
     poolDayData.save();
 
     poolHourData.hourlyVolumeToken0 = poolHourData.hourlyVolumeToken0.plus(amount0);
     poolHourData.hourlyVolumeToken1 = poolHourData.hourlyVolumeToken1.plus(amount1);
     poolHourData.hourlyVolumeETH = poolHourData.hourlyVolumeETH.plus(amount0ETH).plus(amount1ETH);
     poolHourData.hourlyVolumeUSD = poolHourData.hourlyVolumeUSD.plus(amount0USD).plus(amount1USD);
+    log.debug('[auto] saving entity: {}', ['poolHourData']);
     poolHourData.save();
 
     token0DayData.dailyVolumeToken = token0DayData.dailyVolumeToken.plus(amount0);
     token0DayData.dailyVolumeUSD = token0DayData.dailyVolumeUSD.plus(amount0USD);
     token0DayData.dailyVolumeETH = token0DayData.dailyVolumeETH.plus(amount0ETH);
+    log.debug('[auto] saving entity: {}', ['token0DayData']);
     token0DayData.save();
 
     token1DayData.dailyVolumeToken = token1DayData.dailyVolumeToken.plus(amount1);
     token1DayData.dailyVolumeUSD = token1DayData.dailyVolumeUSD.plus(amount1USD);
     token1DayData.dailyVolumeETH = token1DayData.dailyVolumeETH.plus(amount1ETH);
+    log.debug('[auto] saving entity: {}', ['token1DayData']);
     token1DayData.save();
 }
 
@@ -162,15 +174,18 @@ export function handleMint(event: MintEvent): void {
     token0.totalLiquidity = token0.totalLiquidity.plus(amount0);
     token0.totalLiquidityUSD = token0.totalLiquidityUSD.plus(amount0USD);
     token0.totalLiquidityETH = token0.totalLiquidityETH.plus(amount0.times(token0.derivedETH));
+    log.debug('[auto] saving entity: {}', ['token0']);
     token0.save();
 
     token1.txCount = token1.txCount.plus(BI_ONE);
     token1.totalLiquidity = token1.totalLiquidity.plus(amount1);
     token1.totalLiquidityUSD = token1.totalLiquidityUSD.plus(amount1USD);
     token1.totalLiquidityETH = token1.totalLiquidityETH.plus(amount1.times(token1.derivedETH));
+    log.debug('[auto] saving entity: {}', ['token1']);
     token1.save();
 
     statistics.txCount = statistics.txCount.plus(BI_ONE);
+    log.debug('[auto] saving entity: {}', ['statistics']);
     statistics.save();
 
     pool.txCount = pool.txCount.plus(BI_ONE);
@@ -185,6 +200,8 @@ export function handleMint(event: MintEvent): void {
     if (!pool.reserve0.equals(BD_ZERO)) pool.token1Price = pool.reserve1.times(pool.reserve0);
     else pool.token1Price = BD_ZERO;
 
+    log.debug('[auto] saving entity: {}', ['pool']);
+
     pool.save();
 
     const hash = event.transaction.hash.toHex();
@@ -195,6 +212,7 @@ export function handleMint(event: MintEvent): void {
         transaction.block = event.block.number;
         transaction.timestamp = event.block.timestamp;
         transaction.hash = event.transaction.hash;
+        log.debug('[auto] saving entity: {}', ['transaction']);
         transaction.save();
     }
 
@@ -210,6 +228,7 @@ export function handleMint(event: MintEvent): void {
     mint.liquidity = liquidity;
     mint.amountUSD = amount0USD.plus(amount1USD);
     mint.logIndex = event.logIndex;
+    log.debug('[auto] saving entity: {}', ['mint']);
     mint.save();
 
     const tokenId = getItemFromStorage(transaction.id); // This should have been set in the NFPM mint handler
@@ -249,6 +268,7 @@ export function handleMint(event: MintEvent): void {
 
     const clPosition = new CLPosition(tokenId as string);
     clPosition.pool = pool.id;
+    log.debug('[auto] saving entity: {}', ['clPosition']);
     clPosition.save();
 
     log.info('[CLPool] Creating LP position for new mint — tokenId: {}, owner: {}, liquidity: {}', [
@@ -264,6 +284,7 @@ export function handleMint(event: MintEvent): void {
         BigInt.fromString(tokenId as string),
     );
     lpPosition.account = newUserId;
+    log.debug('[auto] saving entity: {}', ['lpPosition']);
     lpPosition.save();
 
     nullifyItem(tokenId as string);
@@ -321,9 +342,14 @@ export function handleBurn(event: BurnEvent): void {
     if (!pool.reserve0.equals(BD_ZERO)) pool.token1Price = pool.reserve1.times(pool.reserve0);
     else pool.token1Price = BD_ZERO;
 
+    log.debug('[auto] saving entity: {}', ['token0']);
+
     token0.save();
+    log.debug('[auto] saving entity: {}', ['token1']);
     token1.save();
+    log.debug('[auto] saving entity: {}', ['statistics']);
     statistics.save();
+    log.debug('[auto] saving entity: {}', ['pool']);
     pool.save();
 
     const hash = event.transaction.hash.toHex();
@@ -334,6 +360,7 @@ export function handleBurn(event: BurnEvent): void {
         transaction.block = event.block.number;
         transaction.timestamp = event.block.timestamp;
         transaction.hash = event.transaction.hash;
+        log.debug('[auto] saving entity: {}', ['transaction']);
         transaction.save();
     }
 
@@ -350,6 +377,7 @@ export function handleBurn(event: BurnEvent): void {
     burn.amountUSD = amount0USD.plus(amount1USD);
     burn.logIndex = event.logIndex;
     burn.needsComplete = false;
+    log.debug('[auto] saving entity: {}', ['burn']);
     burn.save();
 
     updateOverallDayData(event);
