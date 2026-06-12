@@ -84,6 +84,8 @@ type User @entity {
     gaugePositions: [GaugePosition!]! @derivedFrom(field: "account")
     lpPositions: [LiquidityPosition!]! @derivedFrom(field: "account")
     lockPositions: [LockPosition!]! @derivedFrom(field: "owner")
+    sellerRentals: [Rental!]! @derivedFrom(field: "seller")
+    buyerRentals: [Rental!]! @derivedFrom(field: "buyer")
 }
 
 type Gauge @entity {

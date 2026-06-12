@@ -43,8 +43,8 @@
             "startBlock": 42847380
         },
         "VERentalMarketplace": {
-            "address": "0xf2fe2ef1865789e352d4140d98f99486e2e75e76",
-            "startBlock": 46730861
+            "address": "0x5d3f296d167b1a7e085d82e41a54c70004c1235f",
+            "startBlock": 46742383
         }
     },
     "liteforge": {
@@ -69,8 +69,8 @@
             "startBlock": 12969304
         },
         "VERentalMarketplace": {
-            "address": "0xa36754bd88c84af73cbaf0b142aedf821f7e1b8e",
-            "startBlock": 18419146
+            "address": "0x5f7cb797f470858be8909bf7e9ea7a9e87dbd118",
+            "startBlock": 18445321
         }
     }
 }
