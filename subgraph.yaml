@@ -1,343 +1,343 @@
 specVersion: 1.0.0
 indexerHints:
-    prune: auto
+  prune: auto
 schema:
-    file: ./schema.graphql
+  file: ./schema.graphql
 dataSources:
-    - kind: ethereum
-      name: PoolFactory
-      network: arc-testnet
-      source:
-          abi: PoolFactory
-          address: '0xE41d241720FEE7cD6BDfA9aB3204d23687703CD5'
-          startBlock: 42847380
-      mapping:
-          kind: ethereum/events
-          apiVersion: 0.0.7
-          language: wasm/assemblyscript
-          entities:
-              - Pool
-              - Bundle
-          abis:
-              - name: PoolFactory
-                file: ./abis/V2PoolFactory.json
-              - name: ERC20
-                file: ./abis/ERC20.json
-              - name: Oracle
-                file: ./abis/Oracle.json
-          eventHandlers:
-              - event: PoolCreated(indexed address,indexed address,indexed bool,address,uint256)
-                handler: handlePoolCreated
-          file: ./src/handlers/base/V2PoolFactory.ts
-    - kind: ethereum
-      name: CLFactory
-      network: arc-testnet
-      source:
-          abi: CLFactory
-          address: '0xf6a6a429a0b9676293Df0E3616A6a33cA673b5C3'
-          startBlock: 42847380
-      mapping:
-          kind: ethereum/events
-          apiVersion: 0.0.7
-          language: wasm/assemblyscript
-          entities:
-              - Pool
-              - Bundle
-          abis:
-              - name: CLFactory
-                file: ./abis/V3PoolFactory.json
-              - name: ERC20
-                file: ./abis/ERC20.json
-              - name: Oracle
-                file: ./abis/Oracle.json
-          eventHandlers:
-              - event: PoolCreated(indexed address,indexed address,indexed int24,address)
-                handler: handlePoolCreated
-          file: ./src/handlers/base/CLFactory.ts
-    - kind: ethereum
-      name: Voter
-      network: arc-testnet
-      source:
-          abi: Voter
-          address: '0x2914f5e8A40047C7421aaDad35CDB06870ecA0c5'
-          startBlock: 42847380
-      mapping:
-          kind: ethereum/events
-          apiVersion: 0.0.7
-          language: wasm/assemblyscript
-          entities:
-              - Gauge
-              - VotingRewards
-          abis:
-              - name: Voter
-                file: ./abis/Voter.json
-              - name: Gauge
-                file: ./abis/Gauge.json
-              - name: VotingReward
-                file: ./abis/VotingReward.json
-          eventHandlers:
-              - event: GaugeCreated(indexed address,indexed address,indexed
-                    address,address,address,address,address,address)
-                handler: handleGaugeCreated
-              - event: GaugeKilled(indexed address)
-                handler: handleGaugeKilled
-              - event: GaugeRevived(indexed address)
-                handler: handleGaugeRevived
-              - event: Voted(indexed address,indexed address,indexed
-                    uint256,uint256,uint256,uint256)
-                handler: handleVoted
-          file: ./src/handlers/voting/Voter.ts
-    - kind: ethereum
-      name: VotingEscrow
-      network: arc-testnet
-      source:
-          abi: VotingEscrow
-          address: '0xF1B1c2f4E8FcD4aFCA0E608B1c7dB8b4e700154F'
-          startBlock: 42847380
-      mapping:
-          kind: ethereum/events
-          apiVersion: 0.0.7
-          language: wasm/assemblyscript
-          entities:
-              - LockPosition
-          abis:
-              - name: VotingEscrow
-                file: ./abis/VotingEscrow.json
-          eventHandlers:
-              - event: CreateManaged(indexed address,indexed uint256,indexed
-                    address,address,address)
-                handler: handleCreateManaged
-              - event: Deposit(indexed address,indexed uint256,indexed
-                    uint8,uint256,uint256,uint256)
-                handler: handleDeposit
-              - event: DepositManaged(indexed address,indexed uint256,indexed
-                    uint256,uint256,uint256)
-                handler: handleDepositManaged
-              - event: LockPermanent(indexed address,indexed uint256,uint256,uint256)
-                handler: handleLockPermanent
-              - event: Merge(indexed address,indexed uint256,indexed
-                    uint256,uint256,uint256,uint256,uint256,uint256)
-                handler: handleMerge
-              - event: Split(indexed uint256,indexed uint256,indexed
-                    uint256,address,uint256,uint256,uint256,uint256)
-                handler: handleSplit
-              - event: Transfer(indexed address,indexed address,indexed uint256)
-                handler: handleTransfer
-              - event: UnlockPermanent(indexed address,indexed uint256,uint256,uint256)
-                handler: handleUnlockPermanent
-              - event: Withdraw(indexed address,indexed uint256,uint256,uint256)
-                handler: handleWithdraw
-              - event: WithdrawManaged(indexed address,indexed uint256,indexed
-                    uint256,uint256,uint256)
-                handler: handleWithdrawManaged
-          file: ./src/handlers/voting/VotingEscrow.ts
-    - kind: ethereum
-      name: NonfungiblePositionManager
-      network: arc-testnet
-      source:
-          abi: NonfungiblePositionManager
-          address: '0x8948f9d59203F9dCF4de4B2baa10887993274C3C'
-          startBlock: 42847380
-      mapping:
-          kind: ethereum/events
-          apiVersion: 0.0.7
-          language: wasm/assemblyscript
-          entities:
-              - LiquidityPosition
-              - Gauge
-          abis:
-              - name: NonfungiblePositionManager
-                file: ./abis/NFPM.json
-          eventHandlers:
-              - event: DecreaseLiquidity(indexed uint256,uint128,uint256,uint256)
-                handler: handleDecreaseLiquidity
-              - event: IncreaseLiquidity(indexed uint256,uint128,uint256,uint256)
-                handler: handleIncreaseLiquidity
-              - event: Transfer(indexed address,indexed address,indexed uint256)
-                handler: handleTransfer
-          file: ./src/handlers/base/NFPM.ts
-    - kind: ethereum
-      name: VERentalMarketplace
-      network: arc-testnet
-      source:
-          abi: VERentalMarketplace
-          address: '0xf2fe2ef1865789e352d4140d98f99486e2e75e76'
-          startBlock: 46730861
-      mapping:
-          kind: ethereum/events
-          apiVersion: 0.0.7
-          language: wasm/assemblyscript
-          entities:
-              - Rental
-              - Token
-              - User
-          abis:
-              - name: VERentalMarketplace
-                file: ./abis/VERentalMarketplace.json
-              - name: ERC20
-                file: ./abis/ERC20.json
-          eventHandlers:
-              - event: NewRental(indexed address,indexed address,indexed
-                    uint256,address,uint256,uint256,uint256)
-                handler: handleNewRental
-          file: ./src/handlers/base/VERentalMarketplace.ts
+  - kind: ethereum
+    name: PoolFactory
+    network: arc-testnet
+    source:
+      abi: PoolFactory
+      address: "0xE41d241720FEE7cD6BDfA9aB3204d23687703CD5"
+      startBlock: 42847380
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Pool
+        - Bundle
+      abis:
+        - name: PoolFactory
+          file: ./abis/V2PoolFactory.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: Oracle
+          file: ./abis/Oracle.json
+      eventHandlers:
+        - event: PoolCreated(indexed address,indexed address,indexed bool,address,uint256)
+          handler: handlePoolCreated
+      file: ./src/handlers/base/V2PoolFactory.ts
+  - kind: ethereum
+    name: CLFactory
+    network: arc-testnet
+    source:
+      abi: CLFactory
+      address: "0xf6a6a429a0b9676293Df0E3616A6a33cA673b5C3"
+      startBlock: 42847380
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Pool
+        - Bundle
+      abis:
+        - name: CLFactory
+          file: ./abis/V3PoolFactory.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+        - name: Oracle
+          file: ./abis/Oracle.json
+      eventHandlers:
+        - event: PoolCreated(indexed address,indexed address,indexed int24,address)
+          handler: handlePoolCreated
+      file: ./src/handlers/base/CLFactory.ts
+  - kind: ethereum
+    name: Voter
+    network: arc-testnet
+    source:
+      abi: Voter
+      address: "0x2914f5e8A40047C7421aaDad35CDB06870ecA0c5"
+      startBlock: 42847380
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Gauge
+        - VotingRewards
+      abis:
+        - name: Voter
+          file: ./abis/Voter.json
+        - name: Gauge
+          file: ./abis/Gauge.json
+        - name: VotingReward
+          file: ./abis/VotingReward.json
+      eventHandlers:
+        - event: GaugeCreated(indexed address,indexed address,indexed
+            address,address,address,address,address,address)
+          handler: handleGaugeCreated
+        - event: GaugeKilled(indexed address)
+          handler: handleGaugeKilled
+        - event: GaugeRevived(indexed address)
+          handler: handleGaugeRevived
+        - event: Voted(indexed address,indexed address,indexed
+            uint256,uint256,uint256,uint256)
+          handler: handleVoted
+      file: ./src/handlers/voting/Voter.ts
+  - kind: ethereum
+    name: VotingEscrow
+    network: arc-testnet
+    source:
+      abi: VotingEscrow
+      address: "0xF1B1c2f4E8FcD4aFCA0E608B1c7dB8b4e700154F"
+      startBlock: 42847380
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - LockPosition
+      abis:
+        - name: VotingEscrow
+          file: ./abis/VotingEscrow.json
+      eventHandlers:
+        - event: CreateManaged(indexed address,indexed uint256,indexed
+            address,address,address)
+          handler: handleCreateManaged
+        - event: Deposit(indexed address,indexed uint256,indexed
+            uint8,uint256,uint256,uint256)
+          handler: handleDeposit
+        - event: DepositManaged(indexed address,indexed uint256,indexed
+            uint256,uint256,uint256)
+          handler: handleDepositManaged
+        - event: LockPermanent(indexed address,indexed uint256,uint256,uint256)
+          handler: handleLockPermanent
+        - event: Merge(indexed address,indexed uint256,indexed
+            uint256,uint256,uint256,uint256,uint256,uint256)
+          handler: handleMerge
+        - event: Split(indexed uint256,indexed uint256,indexed
+            uint256,address,uint256,uint256,uint256,uint256)
+          handler: handleSplit
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+        - event: UnlockPermanent(indexed address,indexed uint256,uint256,uint256)
+          handler: handleUnlockPermanent
+        - event: Withdraw(indexed address,indexed uint256,uint256,uint256)
+          handler: handleWithdraw
+        - event: WithdrawManaged(indexed address,indexed uint256,indexed
+            uint256,uint256,uint256)
+          handler: handleWithdrawManaged
+      file: ./src/handlers/voting/VotingEscrow.ts
+  - kind: ethereum
+    name: NonfungiblePositionManager
+    network: arc-testnet
+    source:
+      abi: NonfungiblePositionManager
+      address: "0x8948f9d59203F9dCF4de4B2baa10887993274C3C"
+      startBlock: 42847380
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - LiquidityPosition
+        - Gauge
+      abis:
+        - name: NonfungiblePositionManager
+          file: ./abis/NFPM.json
+      eventHandlers:
+        - event: DecreaseLiquidity(indexed uint256,uint128,uint256,uint256)
+          handler: handleDecreaseLiquidity
+        - event: IncreaseLiquidity(indexed uint256,uint128,uint256,uint256)
+          handler: handleIncreaseLiquidity
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/handlers/base/NFPM.ts
+  - kind: ethereum
+    name: VERentalMarketplace
+    network: arc-testnet
+    source:
+      abi: VERentalMarketplace
+      address: "0x5d3f296d167b1a7e085d82e41a54c70004c1235f"
+      startBlock: 46742383
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Rental
+        - Token
+        - User
+      abis:
+        - name: VERentalMarketplace
+          file: ./abis/VERentalMarketplace.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: NewRental(indexed address,indexed address,indexed
+            uint256,address,uint256,uint256,uint256)
+          handler: handleNewRental
+      file: ./src/handlers/base/VERentalMarketplace.ts
 templates:
-    - name: Pool
-      kind: ethereum
-      network: arc-testnet
-      source:
-          abi: V2Pool
-      mapping:
-          kind: ethereum/events
-          apiVersion: 0.0.7
-          language: wasm/assemblyscript
-          entities:
-              - Pool
-          abis:
-              - name: V2Pool
-                file: ./abis/V2Pool.json
-              - name: Oracle
-                file: ./abis/Oracle.json
-              - name: ERC20
-                file: ./abis/ERC20.json
-          eventHandlers:
-              - event: Swap(indexed address,indexed address,uint256,uint256,uint256,uint256)
-                handler: handleSwap
-              - event: Burn(indexed address,indexed address,uint256,uint256)
-                handler: handleBurn
-              - event: Mint(indexed address,uint256,uint256)
-                handler: handleMint
-              - event: Fees(indexed address,uint256,uint256)
-                handler: handleFees
-              - event: Sync(uint256,uint256)
-                handler: handleSync
-              - event: Transfer(indexed address,indexed address,uint256)
-                handler: handleTransfer
-          file: ./src/handlers/core/V2Pools.ts
-    - name: CLPool
-      kind: ethereum
-      network: arc-testnet
-      source:
-          abi: CLPool
-      mapping:
-          kind: ethereum/events
-          apiVersion: 0.0.7
-          language: wasm/assemblyscript
-          entities:
-              - Pool
-          abis:
-              - name: CLPool
-                file: ./abis/V3Pool.json
-              - name: Oracle
-                file: ./abis/Oracle.json
-              - name: ERC20
-                file: ./abis/ERC20.json
-          eventHandlers:
-              - event: Swap(indexed address,indexed address,int256,int256,uint160,uint128,int24)
-                handler: handleSwap
-              - event: Burn(indexed address,indexed int24,indexed int24,uint128,uint256,uint256)
-                handler: handleBurn
-              - event: Mint(address,indexed address,indexed int24,indexed
-                    int24,uint128,uint256,uint256)
-                handler: handleMint
-          file: ./src/handlers/core/CLPools.ts
-    - name: Gauge
-      kind: ethereum
-      network: arc-testnet
-      source:
-          abi: Gauge
-      mapping:
-          kind: ethereum/events
-          apiVersion: 0.0.7
-          language: wasm/assemblyscript
-          entities:
-              - Gauge
-          abis:
-              - name: Gauge
-                file: ./abis/Gauge.json
-              - name: Oracle
-                file: ./abis/Oracle.json
-          eventHandlers:
-              - event: Withdraw(indexed address,uint256)
-                handler: handleWithdraw
-              - event: Deposit(indexed address,indexed address,uint256)
-                handler: handleDeposit
-              - event: NotifyReward(indexed address,uint256)
-                handler: handleNotifyReward
-              - event: ClaimRewards(indexed address,uint256)
-                handler: handleClaimRewards
-          file: ./src/handlers/staking/Gauge.ts
-    - name: CLGauge
-      kind: ethereum
-      network: arc-testnet
-      source:
-          abi: CLGauge
-      mapping:
-          kind: ethereum/events
-          apiVersion: 0.0.7
-          language: wasm/assemblyscript
-          entities:
-              - Gauge
-          abis:
-              - name: CLGauge
-                file: ./abis/CLGauge.json
-              - name: Oracle
-                file: ./abis/Oracle.json
-          eventHandlers:
-              - event: Withdraw(indexed address,indexed uint256,indexed uint128)
-                handler: handleWithdraw
-              - event: Deposit(indexed address,indexed uint256,indexed uint128)
-                handler: handleDeposit
-              - event: NotifyReward(indexed address,uint256)
-                handler: handleNotifyReward
-              - event: ClaimRewards(indexed address,uint256)
-                handler: handleClaimRewards
-          file: ./src/handlers/staking/CLGauge.ts
-    - name: VotingReward
-      kind: ethereum
-      network: arc-testnet
-      source:
-          abi: VotingReward
-      mapping:
-          kind: ethereum/events
-          apiVersion: 0.0.7
-          language: wasm/assemblyscript
-          entities:
-              - VotingReward
-          abis:
-              - name: VotingReward
-                file: ./abis/VotingReward.json
-              - name: Oracle
-                file: ./abis/Oracle.json
-          eventHandlers:
-              - event: NotifyReward(indexed address,indexed address,indexed uint256,uint256)
-                handler: handleNotifyReward
-              - event: ClaimRewards(indexed address,indexed address,uint256)
-                handler: handleClaimRewards
-          file: ./src/handlers/voting/VotingReward.ts
-    - name: VERental
-      kind: ethereum
-      network: arc-testnet
-      source:
-          abi: VERental
-      mapping:
-          kind: ethereum/events
-          apiVersion: 0.0.7
-          language: wasm/assemblyscript
-          entities:
-              - Rental
-              - User
-          abis:
-              - name: VERental
-                file: ./abis/VERental.json
-          eventHandlers:
-              - event: StatusChange(uint8,uint256)
-                handler: handleStatusChange
-              - event: NewBuyer(address)
-                handler: handleNewBuyer
-              - event: Reaped()
-                handler: handleReaped
-              - event: Initialize(indexed address,indexed address,indexed
-                    uint256,uint256,uint256,uint256)
-                handler: handleInitialize
-          file: ./src/handlers/voting/Rentals.ts
+  - name: Pool
+    kind: ethereum
+    network: arc-testnet
+    source:
+      abi: V2Pool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Pool
+      abis:
+        - name: V2Pool
+          file: ./abis/V2Pool.json
+        - name: Oracle
+          file: ./abis/Oracle.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: Swap(indexed address,indexed address,uint256,uint256,uint256,uint256)
+          handler: handleSwap
+        - event: Burn(indexed address,indexed address,uint256,uint256)
+          handler: handleBurn
+        - event: Mint(indexed address,uint256,uint256)
+          handler: handleMint
+        - event: Fees(indexed address,uint256,uint256)
+          handler: handleFees
+        - event: Sync(uint256,uint256)
+          handler: handleSync
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+      file: ./src/handlers/core/V2Pools.ts
+  - name: CLPool
+    kind: ethereum
+    network: arc-testnet
+    source:
+      abi: CLPool
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Pool
+      abis:
+        - name: CLPool
+          file: ./abis/V3Pool.json
+        - name: Oracle
+          file: ./abis/Oracle.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: Swap(indexed address,indexed address,int256,int256,uint160,uint128,int24)
+          handler: handleSwap
+        - event: Burn(indexed address,indexed int24,indexed int24,uint128,uint256,uint256)
+          handler: handleBurn
+        - event: Mint(address,indexed address,indexed int24,indexed
+            int24,uint128,uint256,uint256)
+          handler: handleMint
+      file: ./src/handlers/core/CLPools.ts
+  - name: Gauge
+    kind: ethereum
+    network: arc-testnet
+    source:
+      abi: Gauge
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Gauge
+      abis:
+        - name: Gauge
+          file: ./abis/Gauge.json
+        - name: Oracle
+          file: ./abis/Oracle.json
+      eventHandlers:
+        - event: Withdraw(indexed address,uint256)
+          handler: handleWithdraw
+        - event: Deposit(indexed address,indexed address,uint256)
+          handler: handleDeposit
+        - event: NotifyReward(indexed address,uint256)
+          handler: handleNotifyReward
+        - event: ClaimRewards(indexed address,uint256)
+          handler: handleClaimRewards
+      file: ./src/handlers/staking/Gauge.ts
+  - name: CLGauge
+    kind: ethereum
+    network: arc-testnet
+    source:
+      abi: CLGauge
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Gauge
+      abis:
+        - name: CLGauge
+          file: ./abis/CLGauge.json
+        - name: Oracle
+          file: ./abis/Oracle.json
+      eventHandlers:
+        - event: Withdraw(indexed address,indexed uint256,indexed uint128)
+          handler: handleWithdraw
+        - event: Deposit(indexed address,indexed uint256,indexed uint128)
+          handler: handleDeposit
+        - event: NotifyReward(indexed address,uint256)
+          handler: handleNotifyReward
+        - event: ClaimRewards(indexed address,uint256)
+          handler: handleClaimRewards
+      file: ./src/handlers/staking/CLGauge.ts
+  - name: VotingReward
+    kind: ethereum
+    network: arc-testnet
+    source:
+      abi: VotingReward
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - VotingReward
+      abis:
+        - name: VotingReward
+          file: ./abis/VotingReward.json
+        - name: Oracle
+          file: ./abis/Oracle.json
+      eventHandlers:
+        - event: NotifyReward(indexed address,indexed address,indexed uint256,uint256)
+          handler: handleNotifyReward
+        - event: ClaimRewards(indexed address,indexed address,uint256)
+          handler: handleClaimRewards
+      file: ./src/handlers/voting/VotingReward.ts
+  - name: VERental
+    kind: ethereum
+    network: arc-testnet
+    source:
+      abi: VERental
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Rental
+        - User
+      abis:
+        - name: VERental
+          file: ./abis/VERental.json
+      eventHandlers:
+        - event: StatusChange(uint8,uint256)
+          handler: handleStatusChange
+        - event: NewBuyer(address)
+          handler: handleNewBuyer
+        - event: Reaped()
+          handler: handleReaped
+        - event: Initialize(indexed address,indexed address,indexed
+            uint256,uint256,uint256,uint256)
+          handler: handleInitialize
+      file: ./src/handlers/voting/Rentals.ts
