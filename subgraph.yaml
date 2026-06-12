@@ -161,8 +161,8 @@ dataSources:
       network: arc-testnet
       source:
           abi: VERentalMarketplace
-          address: '0xd806d049714a70116e087ad6d2433df7437c47af'
-          startBlock: 46636122
+          address: '0xf2fe2ef1865789e352d4140d98f99486e2e75e76'
+          startBlock: 46730861
       mapping:
           kind: ethereum/events
           apiVersion: 0.0.7
@@ -337,4 +337,7 @@ templates:
                 handler: handleNewBuyer
               - event: Reaped()
                 handler: handleReaped
+              - event: Initialize(indexed address,indexed address,indexed
+                    uint256,uint256,uint256,uint256)
+                handler: handleInitialize
           file: ./src/handlers/voting/Rentals.ts

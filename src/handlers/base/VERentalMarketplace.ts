@@ -28,6 +28,7 @@ export function handleNewRental(event: NewRentalEvent): void {
     rental.seller = user.id;
     rental.reaped = false;
     rental.lock = event.params.tokenId.toString();
+    rental.commission = BD_ZERO;
 
     const tokenId = event.params.paymentToken.toHex();
     let token = Token.load(tokenId);

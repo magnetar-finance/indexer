@@ -328,4 +328,5 @@ type Rental @entity {
     reaped: Boolean!
     status: RentalStatus!
     lock: LockPosition!
+    commission: BigDecimal! @config(precision: 500, scale: 5)
 }
