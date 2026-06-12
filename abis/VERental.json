@@ -58,6 +58,13 @@
     },
     {
         "type": "function",
+        "name": "emergencyClose",
+        "inputs": [],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
         "name": "escrow",
         "inputs": [],
         "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
@@ -291,6 +298,7 @@
         "name": "OwnableUnauthorizedAccount",
         "inputs": [{ "name": "account", "type": "address", "internalType": "address" }]
     },
+    { "type": "error", "name": "ReentrancyGuardReentrantCall", "inputs": [] },
     { "type": "error", "name": "RentedOut", "inputs": [] },
     {
         "type": "error",

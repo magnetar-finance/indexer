@@ -4,7 +4,19 @@ import {
     StatusChange as StatusChangeEvent,
     Reaped as ReapedEvent,
     NewBuyer as NewBuyerEvent,
+    Initialize as InitializeEvent,
 } from '../../../generated/templates/VERental/VERental';
+import { divideByBase } from '../../utils/math';
+
+export function handleInitialize(event: InitializeEvent): void {
+    const rentalId = event.address.toHex();
+    const rental = Rental.load(rentalId) as Rental;
+
+    rental.commission = divideByBase(event.params.rewardsCommission, 4);
+    log.debug('[auto] saving entity: {}', ['rental']);
+
+    rental.save();
+}
 
 export function handleStatusChange(event: StatusChangeEvent): void {
     const rentalId = event.address.toHex();
