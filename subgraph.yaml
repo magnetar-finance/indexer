@@ -161,8 +161,8 @@ dataSources:
       network: arc-testnet
       source:
           abi: VERentalMarketplace
-          address: '0x5d3f296d167b1a7e085d82e41a54c70004c1235f'
-          startBlock: 46742383
+          address: '0x17e1d9be008582f861860b2421a22233253bc726'
+          startBlock: 46900899
       mapping:
           kind: ethereum/events
           apiVersion: 0.0.7
