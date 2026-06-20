@@ -258,6 +258,7 @@ export function handleSync(event: SyncEvent): void {
     // Statistics
     const statistics = Statistics.load('1') as Statistics;
     statistics.totalVolumeLockedETH = statistics.totalVolumeLockedETH.minus(pool.reserveETH);
+    statistics.totalVolumeLockedUSD = statistics.totalVolumeLockedUSD.minus(pool.reserveUSD);
 
     token0.totalLiquidity = token0.totalLiquidity.minus(pool.reserve0);
     token1.totalLiquidity = token1.totalLiquidity.minus(pool.reserve1);
