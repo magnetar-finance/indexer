@@ -271,7 +271,7 @@ export function handleSync(event: SyncEvent): void {
     if (!pool.reserve0.equals(BD_ZERO)) pool.token1Price = pool.reserve1.div(pool.reserve0);
     else pool.token1Price = BD_ZERO;
 
-    const bundle = loadBundlePrice();
+    loadBundlePrice();
     // load token prices
     token0 = loadTokenPrice(token0);
     token1 = loadTokenPrice(token1);
@@ -280,7 +280,7 @@ export function handleSync(event: SyncEvent): void {
     pool.reserveUSD = pool.reserve0.times(token0.derivedUSD).plus(pool.reserve1.times(token1.derivedUSD));
 
     statistics.totalVolumeLockedETH = statistics.totalVolumeLockedETH.plus(pool.reserveETH);
-    statistics.totalVolumeLockedUSD = statistics.totalVolumeLockedETH.times(bundle.ethPrice);
+    statistics.totalVolumeLockedUSD = statistics.totalVolumeLockedUSD.plus(pool.reserveUSD);
 
     token0.totalLiquidity = token0.totalLiquidity.plus(pool.reserve0);
     token0.totalLiquidityETH = token0.totalLiquidity.times(token0.derivedETH);

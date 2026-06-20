@@ -6,7 +6,7 @@ import {
     DecreaseLiquidity as DecreaseLiquidityEvent,
 } from '../../../generated/NonfungiblePositionManager/NonfungiblePositionManager';
 import { CLPosition, LiquidityPosition, User } from '../../../generated/schema';
-import { getItemFromStorage, nullifyItem, setItemInStorage } from '../../utils/storage';
+import { setItemInStorage } from '../../utils/storage';
 import { log } from '@graphprotocol/graph-ts';
 
 export function handleTransfer(event: TransferEvent): void {

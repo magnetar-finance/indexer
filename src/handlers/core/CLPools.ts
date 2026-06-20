@@ -185,6 +185,8 @@ export function handleMint(event: MintEvent): void {
     token1.save();
 
     statistics.txCount = statistics.txCount.plus(BI_ONE);
+    statistics.totalVolumeLockedETH = statistics.totalVolumeLockedETH.minus(pool.reserveETH);
+    statistics.totalVolumeLockedUSD = statistics.totalVolumeLockedUSD.minus(pool.reserveUSD);
     log.debug('[auto] saving entity: {}', ['statistics']);
     statistics.save();
 
@@ -203,6 +205,10 @@ export function handleMint(event: MintEvent): void {
     log.debug('[auto] saving entity: {}', ['pool']);
 
     pool.save();
+
+    statistics.totalVolumeLockedETH = statistics.totalVolumeLockedETH.plus(pool.reserveETH);
+    statistics.totalVolumeLockedUSD = statistics.totalVolumeLockedUSD.plus(pool.reserveUSD);
+    statistics.save();
 
     const hash = event.transaction.hash.toHex();
     let transaction = Transaction.load(hash);
