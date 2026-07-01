@@ -72,5 +72,31 @@
             "address": "0x17ec3da3c87497fc85e6f59d0a81151dd357aadd",
             "startBlock": 18805572
         }
+    },
+    "neura-testnet": {
+        "PoolFactory": {
+            "address": "0xE41d241720FEE7cD6BDfA9aB3204d23687703CD5",
+            "startBlock": 10061327
+        },
+        "CLFactory": {
+            "address": "0xf6a6a429a0b9676293Df0E3616A6a33cA673b5C3",
+            "startBlock": 10061327
+        },
+        "Voter": {
+            "address": "0x2914f5e8A40047C7421aaDad35CDB06870ecA0c5",
+            "startBlock": 10061327
+        },
+        "VotingEscrow": {
+            "address": "0xF1B1c2f4E8FcD4aFCA0E608B1c7dB8b4e700154F",
+            "startBlock": 10061327
+        },
+        "NonfungiblePositionManager": {
+            "address": "0x8948f9d59203F9dCF4de4B2baa10887993274C3C",
+            "startBlock": 10061327
+        },
+        "VERentalMarketplace": {
+            "address": "0xec5A20480c49B9286388F72f1AA95aF0D2525c94",
+            "startBlock": 10061327
+        }
     }
 }
